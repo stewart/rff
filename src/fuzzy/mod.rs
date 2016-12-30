@@ -86,7 +86,8 @@ mod tests {
         assert!(matches("a", "A"));
         assert!(matches("A", "a"));
         assert!(matches("山", "山"));
-        assert!(matches("café", "CAFÉ"))
+        assert!(matches("café", "CAFÉ"));
+        assert!(matches("weiß", "WEIẞ"));
     }
 
     #[bench]
