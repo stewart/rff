@@ -14,13 +14,9 @@ pub use self::score::*;
 #[inline(always)]
 pub fn eq(a: char, b: char) -> bool {
     match a {
-        a if a == b => true,
-        a if a.is_ascii() && !b.is_ascii() => false,
-        a if !a.is_ascii() && b.is_ascii() => false,
-        a if a.is_ascii() && b.is_ascii() => {
-            a.to_ascii_lowercase().eq(&b.to_ascii_lowercase())
-        },
-        a => a.to_lowercase().eq(b.to_lowercase())
+        _ if a == b => true,
+        _ if a.is_ascii() || b.is_ascii() => a.eq_ignore_ascii_case(&b),
+        _ => a.to_lowercase().eq(b.to_lowercase())
     }
 }
 
@@ -31,12 +27,13 @@ pub fn eq(a: char, b: char) -> bool {
 /// ```
 /// assert!(rff::fuzzy::matches("amo", "app/models/order"));
 /// ```
+#[inline]
 pub fn matches(needle: &str, haystack: &str) -> bool {
-    let mut hchars = haystack.chars();
-
     if needle == haystack {
         return true;
     }
+
+    let mut hchars = haystack.chars();
 
     'outer: for n in needle.chars() {
         loop {
