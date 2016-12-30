@@ -11,6 +11,7 @@ pub use self::score::*;
 /// ```
 /// assert!(rff::fuzzy::eq('a', 'A'));
 /// ```
+#[inline(always)]
 pub fn eq(a: char, b: char) -> bool {
     match a {
         a if a == b => true,
