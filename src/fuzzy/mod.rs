@@ -1,4 +1,5 @@
 mod score;
+mod mat;
 pub mod consts;
 
 use std::ascii::AsciiExt;
