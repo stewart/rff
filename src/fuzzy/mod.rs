@@ -17,11 +17,27 @@ pub fn eq(a: char, b: char) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use test::Bencher;
 
     #[test]
     fn test_eq() {
         assert!(eq('a', 'A'));
         assert!(eq('山', '山'));
         assert!(!eq('a', 'b'));
+    }
+
+    #[bench]
+    fn bench_eq_same(b: &mut Bencher) {
+        b.iter(|| eq('a', 'a'));
+    }
+
+    #[bench]
+    fn bench_eq_ascii(b: &mut Bencher) {
+        b.iter(|| eq('a', 'A'));
+    }
+
+    #[bench]
+    fn bench_eq_utf8(b: &mut Bencher) {
+        b.iter(|| eq('ø', 'Ø'));
     }
 }
