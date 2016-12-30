@@ -36,13 +36,11 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
     let mut hchars = haystack.chars();
 
     'outer: for n in needle.chars() {
-        loop {
-            match hchars.next() {
-                Some(h) if eq(h, n) => continue 'outer,
-                Some(_) => continue,
-                None => return false
-            }
+        while let Some(h) = hchars.next() {
+            if eq(h, n) { continue 'outer }
         }
+
+        return false
     }
 
     true
