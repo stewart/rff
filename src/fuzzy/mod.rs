@@ -1,6 +1,7 @@
 mod score;
 pub mod consts;
 
+use std::ascii::AsciiExt;
 pub use self::score::*;
 
 /// Compares two characters case-insensitively
@@ -11,7 +12,15 @@ pub use self::score::*;
 /// assert!(rff::fuzzy::eq('a', 'A'));
 /// ```
 pub fn eq(a: char, b: char) -> bool {
-    a.to_uppercase().eq(b.to_uppercase())
+    match a {
+        a if a == b => true,
+        a if a.is_ascii() && !b.is_ascii() => false,
+        a if !a.is_ascii() && b.is_ascii() => false,
+        a if a.is_ascii() && b.is_ascii() => {
+            a.to_ascii_lowercase().eq(&b.to_ascii_lowercase())
+        },
+        a => a.to_lowercase().eq(b.to_lowercase())
+    }
 }
 
 #[cfg(test)]
@@ -39,5 +48,10 @@ mod tests {
     #[bench]
     fn bench_eq_utf8(b: &mut Bencher) {
         b.iter(|| eq('ø', 'Ø'));
+    }
+
+    #[bench]
+    fn bench_eq_mixed(b: &mut Bencher) {
+        b.iter(|| eq('a', 'Ø'));
     }
 }
