@@ -1,3 +1,5 @@
+pub mod fuzzy;
+
 #[cfg(test)]
 mod tests {
     #[test]
