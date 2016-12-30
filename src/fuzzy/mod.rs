@@ -34,6 +34,10 @@ pub fn eq(a: char, b: char) -> bool {
 pub fn matches(needle: &str, haystack: &str) -> bool {
     let mut hchars = haystack.chars();
 
+    if needle == haystack {
+        return true;
+    }
+
     'outer: for n in needle.chars() {
         loop {
             match hchars.next() {
@@ -124,6 +128,14 @@ mod tests {
             matches("amor", "Gemfile");
             matches("amor", "node_modules/test/a/thing.js");
             matches("amor", "vendor/bundle/ruby/gem.rb")
+        })
+    }
+
+    #[bench]
+    fn bench_matches_eq(b: &mut Bencher) {
+        b.iter(|| {
+            matches("Gemfile", "Gemfile");
+            matches("gemfile", "Gemfile")
         })
     }
 }
