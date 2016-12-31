@@ -5,6 +5,14 @@ pub struct Score {
 }
 
 impl Score {
+    /// Creates a new Score with the provided value
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let score = rff::fuzzy::Score::new(1.0);
+    /// assert_eq!(score.value, 1.0);
+    /// ```
     pub fn new(value: f32) -> Score {
         Score {
             value: value
@@ -15,10 +23,4 @@ impl Score {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn new() {
-        let score = Score::new(1.0);
-        assert_eq!(score.value, 1.0);
-    }
 }
