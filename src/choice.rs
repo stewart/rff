@@ -1,4 +1,5 @@
 use std::cmp::Ordering;
+use std::fmt;
 use fuzzy::{matches, Score};
 
 /// A Choice wraps a String and it's calculated Score
@@ -35,6 +36,12 @@ impl PartialOrd for Choice {
     }
 }
 
+impl fmt::Display for Choice {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -51,5 +58,11 @@ mod tests {
         let b = Choice::new("amor", String::from("app/models/zrder")).unwrap();
 
         assert!(a > b);
+    }
+
+    #[test]
+    fn display() {
+        let choice = Choice::new("amor", String::from("app/models/order")).unwrap();
+        assert_eq!(format!("{}", choice), "app/models/order");
     }
 }
