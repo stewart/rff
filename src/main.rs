@@ -1,9 +1,11 @@
 extern crate getopts;
+extern crate rayon;
 extern crate rff;
 
 use std::env;
 use std::io::{self, BufRead, Write, BufWriter};
 use std::process;
+use rayon::prelude::*;
 use getopts::{Options, Fail};
 use rff::choice::Choice;
 
@@ -46,7 +48,7 @@ fn main() {
 
         for _ in 0..100 {
             let mut choices = choices.
-                iter().
+                par_iter().
                 cloned().
                 filter_map(|choice| Choice::new(&search, choice)).
                 collect::<Vec<Choice>>();
@@ -56,7 +58,7 @@ fn main() {
     } else if matches.opt_present("s") {
         let search = matches.opt_str("s").unwrap();
         let mut choices = choices.
-            into_iter().
+            into_par_iter().
             filter_map(|choice| Choice::new(&search, choice)).
             collect::<Vec<Choice>>();
 
