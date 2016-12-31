@@ -107,6 +107,11 @@ mod tests {
     }
 
     #[bench]
+    fn bench_matches_more_specific(b: &mut Bencher) {
+        b.iter(|| matches("app/models", "app/models/order.rb"))
+    }
+
+    #[bench]
     fn bench_matches_mixed_case(b: &mut Bencher) {
         b.iter(|| matches("AMOr", "App/Models/Order.rb"))
     }

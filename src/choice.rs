@@ -21,3 +21,14 @@ impl Choice {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn create_choice(b: &mut Bencher) {
+        b.iter(|| Choice::new("app/models", String::from("app/models/order")))
+    }
+}
