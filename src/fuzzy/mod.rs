@@ -5,22 +5,6 @@ pub mod consts;
 use std::ascii::AsciiExt;
 pub use self::score::*;
 
-/// Compares two characters case-insensitively
-///
-/// # Examples
-///
-/// ```
-/// assert!(rff::fuzzy::eq('a', 'A'));
-/// ```
-#[inline(always)]
-pub fn eq(a: char, b: char) -> bool {
-    match a {
-        _ if a == b => true,
-        _ if a.is_ascii() || b.is_ascii() => a.eq_ignore_ascii_case(&b),
-        _ => a.to_lowercase().eq(b.to_lowercase())
-    }
-}
-
 /// Searches for needle's chars in the haystack
 ///
 /// # Examples
@@ -45,6 +29,16 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
     }
 
     true
+}
+
+/// Compares two characters case-insensitively
+#[inline(always)]
+fn eq(a: char, b: char) -> bool {
+    match a {
+        _ if a == b => true,
+        _ if a.is_ascii() || b.is_ascii() => a.eq_ignore_ascii_case(&b),
+        _ => a.to_lowercase().eq(b.to_lowercase())
+    }
 }
 
 #[cfg(test)]
