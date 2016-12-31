@@ -10,8 +10,10 @@ use rff::choice::Choice;
 fn main() {
     let args = env::args().skip(1).collect::<Vec<String>>();
     let mut opts = Options::new();
+    let choices = get_choices();
 
     opts.optopt("s", "search", "Output sorted matches of QUERY", "QUERY");
+    opts.optflag("", "benchmark", "Run search in benchmark mode");
     opts.optflag("h", "help", "Display this help and exit");
     opts.optflag("v", "version", "Display version information and exit");
 
@@ -34,9 +36,26 @@ fn main() {
         return;
     }
 
-    if matches.opt_present("s") {
+    if matches.opt_present("benchmark") {
+        if !matches.opt_present("s") {
+            println!("Must specify -s/--search with --benchmark");
+            process::exit(1);
+        }
+
         let search = matches.opt_str("s").unwrap();
-        let mut choices = get_choices().
+
+        for _ in 0..100 {
+            let mut choices = choices.
+                iter().
+                cloned().
+                filter_map(|choice| Choice::new(&search, choice)).
+                collect::<Vec<Choice>>();
+
+            choices.sort_by(|a, b| b.partial_cmp(&a).unwrap());
+        }
+    } else if matches.opt_present("s") {
+        let search = matches.opt_str("s").unwrap();
+        let mut choices = choices.
             into_iter().
             filter_map(|choice| Choice::new(&search, choice)).
             collect::<Vec<Choice>>();
