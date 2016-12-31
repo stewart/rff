@@ -1,13 +1,17 @@
 extern crate getopts;
+extern crate rff;
 
 use std::env;
+use std::io::{self, BufRead, Write, BufWriter};
 use std::process;
 use getopts::{Options, Fail};
+use rff::choice::Choice;
 
 fn main() {
     let args = env::args().skip(1).collect::<Vec<String>>();
     let mut opts = Options::new();
 
+    opts.optopt("s", "search", "Output sorted matches of QUERY", "QUERY");
     opts.optflag("h", "help", "Display this help and exit");
     opts.optflag("v", "version", "Display version information and exit");
 
@@ -29,6 +33,37 @@ fn main() {
         print_version();
         return;
     }
+
+    if matches.opt_present("s") {
+        let search = matches.opt_str("s").unwrap();
+        let mut choices = get_choices().
+            into_iter().
+            filter_map(|choice| Choice::new(&search, choice)).
+            collect::<Vec<Choice>>();
+
+        choices.sort_by(|a, b| b.partial_cmp(&a).unwrap());
+
+        let stdout = io::stdout();
+        let mut stdout = BufWriter::new(stdout.lock());
+
+        for choice in choices {
+            writeln!(stdout, "{}", choice).unwrap();
+        }
+    } else {
+        println!("Interactive mode coming soon!");
+    }
+}
+
+fn get_choices() -> Vec<String> {
+    let mut lines = vec![];
+
+    let stdin = io::stdin();
+
+    for line in stdin.lock().lines() {
+        lines.push(line.unwrap());
+    }
+
+    lines
 }
 
 fn translate_parse_error(err: Fail) -> String {
