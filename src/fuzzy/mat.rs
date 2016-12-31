@@ -6,20 +6,22 @@ pub enum Error {
 /// The Mat struct represents a matrix of scores as a 2D vector of f32s
 #[derive(Debug)]
 pub struct Mat {
-    contents: Vec<Vec<f32>>
+    cols: usize,
+    contents: Vec<f32>
 }
 
 impl Mat {
     /// Creates a new Mat with the specified dimensions
     pub fn new(width: usize, height: usize) -> Mat {
         Mat {
-            contents: vec![vec![0.0; height]; width]
+            cols: height,
+            contents: vec![0.0; width * height]
         }
     }
 
     /// Gets the value at the given coordinates
     pub fn get(&self, x: usize, y: usize) -> Option<f32> {
-        self.contents.get(x).and_then(|x| x.get(y)).map(|y| *y)
+        self.contents.get(x * self.cols + y).map(|y| *y)
     }
 
     /// Sets the value at the given coordinates
@@ -31,7 +33,7 @@ impl Mat {
 
     /// Gets a mutable reference to the value at the given coordinates
     fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut f32> {
-        self.contents.get_mut(x).and_then(|x| x.get_mut(y))
+        self.contents.get_mut(x * self.cols + y)
     }
 }
 
