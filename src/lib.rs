@@ -2,6 +2,7 @@
 extern crate test;
 
 pub mod fuzzy;
+pub mod choice;
 
 #[cfg(test)]
 mod tests {
