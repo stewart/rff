@@ -6,6 +6,7 @@ authors = ["Andrew Stewart <andrew@stwrt.ca>"]
 [dependencies]
 getopts = "0.2.4"
 rayon = "0.6.0"
+libc = "0.2.18"
 
 [[bin]]
 name = "rff"

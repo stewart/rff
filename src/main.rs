@@ -1,5 +1,6 @@
 extern crate getopts;
 extern crate rayon;
+extern crate libc;
 extern crate rff;
 
 mod interface;
