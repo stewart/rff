@@ -68,7 +68,7 @@ impl Interface {
             filter_map(|choice| Choice::new(&self.search, choice)).
             collect::<Vec<_>>();
 
-        matches.sort_by(|a, b| b.partial_cmp(&a).unwrap());
+        matches.sort_by(|a, b| b.partial_cmp(a).unwrap());
 
         self.matching = matches;
     }
