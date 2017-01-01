@@ -14,6 +14,11 @@ use rff::choice::Choice;
 use interface::{Interface, Error};
 
 fn main() {
+    let code = run();
+    process::exit(code);
+}
+
+fn run() -> i32 {
     let args = env::args().skip(1).collect::<Vec<String>>();
     let mut opts = Options::new();
 
@@ -27,24 +32,24 @@ fn main() {
         Err(err) => {
             println!("{}", err);
             print_usage(opts);
-            process::exit(1);
+            return 1;
         }
     };
 
     if matches.opt_present("h") {
         print_usage(opts);
-        return;
+        return 0;
     }
 
     if matches.opt_present("v") {
         print_version();
-        return;
+        return 0;
     }
 
     if matches.opt_present("benchmark") {
         if !matches.opt_present("s") {
             println!("Must specify -s/--search with --benchmark");
-            process::exit(1);
+            return 1;
         }
 
         let choices = get_choices();
@@ -78,13 +83,15 @@ fn main() {
         let mut interface = Interface::with_choices(get_choices());
         match interface.run() {
             Ok(result) => println!("{}", result),
-            Err(Error::CtrlC) => process::exit(1),
+            Err(Error::CtrlC) => return 1,
             Err(e) => {
                 println!("error: {:?}", e);
-                process::exit(1)
+                return 1;
             }
         }
     }
+
+    0
 }
 
 fn get_choices() -> Vec<String> {
