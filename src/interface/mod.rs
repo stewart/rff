@@ -1,3 +1,5 @@
+mod terminal;
+
 pub struct Interface {
     choices: Vec<String>
 }
