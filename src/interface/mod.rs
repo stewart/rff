@@ -6,6 +6,24 @@ use self::terminal::{Terminal, Event, Key};
 use self::ansi::{clear, cursor};
 use rff::choice::Choice;
 
+#[derive(Debug)]
+pub enum Error {
+    Write(io::Error),
+    Reset(terminal::Error)
+}
+
+impl From<io::Error> for Error {
+    fn from(err: io::Error) -> Error {
+        Error::Write(err)
+    }
+}
+
+impl From<terminal::Error> for Error {
+    fn from(err: terminal::Error) -> Error {
+        Error::Reset(err)
+    }
+}
+
 pub struct Interface {
     choices: Vec<String>,
     matching: Vec<Choice>,
