@@ -5,6 +5,7 @@ pub trait Color {
     fn write_bg(&self, f: &mut Formatter) -> Result;
 }
 
+#[allow(dead_code)]
 #[derive(Copy, Clone)]
 pub enum Colors {
     Black,
