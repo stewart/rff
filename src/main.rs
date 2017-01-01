@@ -10,6 +10,7 @@ use std::process;
 use rayon::prelude::*;
 use getopts::{Options, Fail};
 use rff::choice::Choice;
+use interface::Interface;
 
 fn main() {
     let args = env::args().skip(1).collect::<Vec<String>>();
@@ -73,7 +74,8 @@ fn main() {
             writeln!(stdout, "{}", choice).unwrap();
         }
     } else {
-        println!("Interactive mode coming soon!");
+        let mut interface = Interface::with_choices(get_choices());
+        interface.run()
     }
 }
 
