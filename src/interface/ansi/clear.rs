@@ -3,6 +3,7 @@ use std::fmt::{Display, Formatter, Result};
 generate_csi_struct!(AfterCursor, "K");
 generate_csi_struct!(BeforeCursor, "1K");
 generate_csi_struct!(Line, "2K");
+generate_csi_struct!(Screen, "J");
 
 #[cfg(test)]
 mod tests {
@@ -21,5 +22,10 @@ mod tests {
     #[test]
     fn line() {
         assert_eq!(format!("{}", Line), "\x1b[2K");
+    }
+
+    #[test]
+    fn screen() {
+        assert_eq!(format!("{}", Screen), "\x1b[J");
     }
 }
