@@ -33,30 +33,29 @@ impl Interface {
         self.render().expect("Unable to render");
 
         for event in self.terminal.events().unwrap() {
-            match event {
-                Ok(Event::Key(Key::Ctrl('c'))) => {
+            match event.unwrap() {
+                Event::Key(Key::Ctrl('c')) => {
                     return;
                 },
 
-                Ok(Event::Key(Key::Char('\n'))) => {
+                Event::Key(Key::Char('\n')) => {
                     self.emit();
                     return;
                 },
 
-                Ok(Event::Key(Key::Char(ch))) => {
+                Event::Key(Key::Char(ch)) => {
                     self.search.push(ch);
                     self.filter_choices();
                     self.render().expect("Unable to render");
                 },
 
-                Ok(Event::Key(Key::Backspace)) => {
+                Event::Key(Key::Backspace) => {
                     self.search.pop();
                     self.filter_choices();
                     self.render().expect("Unable to render");
                 },
 
-                Ok(_) => {}
-                Err(err) => write!(self.terminal, "{:?}", err).unwrap(),
+                _ => {}
             };
         }
     }
