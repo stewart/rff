@@ -80,13 +80,20 @@ impl Terminal {
         Ok(())
     }
 
-    pub fn reset(&mut self) {
+    pub fn reset(&mut self) -> Result<(), Error> {
         if let Some(opts) = self.prev_termios {
             let fd = self.file.as_raw_fd();
 
             // disable raw mode, by setting the original termios
-            unsafe { tcsetattr(fd, TCSANOW, &opts); }
+            unsafe {
+                let result = tcsetattr(fd, TCSANOW, &opts);
+                if result != 0 {
+                    return Err(Error::TcSetAttr);
+                }
+            }
         }
+
+        Ok(())
     }
 
     pub fn events(&self) -> io::Result<Events<File>> {
@@ -112,7 +119,7 @@ impl Write for Terminal {
 
 impl Drop for Terminal {
     fn drop(&mut self) {
-        self.reset();
+        self.reset().unwrap();
     }
 }
 

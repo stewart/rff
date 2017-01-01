@@ -108,7 +108,7 @@ impl Interface {
 
     fn emit(&mut self) {
         write!(self.terminal, "{}{}", cursor::Column(1), clear::Screen).unwrap();
-        self.terminal.reset();
+        self.terminal.reset().unwrap();
 
         let choice = self.matching.
             iter().
