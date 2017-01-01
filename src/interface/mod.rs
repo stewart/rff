@@ -57,8 +57,7 @@ impl Interface {
                 },
 
                 Event::Key(Key::Char('\n')) => {
-                    self.emit();
-                    return;
+                    break;
                 },
 
                 Event::Key(Key::Char(ch)) => {
@@ -76,6 +75,9 @@ impl Interface {
                 _ => {}
             };
         }
+
+        self.clear().unwrap();
+        println!("{}", self.result());
     }
 
     fn filter_choices(&mut self) {
@@ -123,16 +125,13 @@ impl Interface {
         Ok(number_of_choices)
     }
 
-    fn emit(&mut self) {
-        write!(self.terminal, "{}{}", cursor::Column(1), clear::Screen).unwrap();
-        self.terminal.reset().unwrap();
+    fn clear(&mut self) -> Result<(), Error> {
+        write!(self.terminal, "{}{}", cursor::Column(1), clear::Screen)?;
+        self.terminal.reset()?;
+        Ok(())
+    }
 
-        let choice = self.matching.
-            iter().
-            map(|c| c.text()).
-            nth(0).
-            unwrap_or("");
-
-        println!("{}", choice);
+    fn result(&mut self) -> &str {
+        self.matching.iter().map(|c| c.text()).nth(0).unwrap_or("")
     }
 }
