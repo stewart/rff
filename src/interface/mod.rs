@@ -73,13 +73,15 @@ impl Interface {
         write!(term, "{}{}", clear::Line, cursor::Column(1))?;
         write!(term, "> {}", self.search)?;
 
-        for choice in self.matching.iter().take(10) {
-            write!(term, "\r\n{}", clear::Line)?;
-            write!(term, "{}", choice)?;
+        let choices = self.matching.iter().take(10);
+        let num_choices = choices.len() as u16;
+
+        for choice in choices {
+            write!(term, "\r\n{}{}", clear::Line, choice)?;
         }
 
         let column = format!("> {}", self.search).len() as u16;
-        write!(term, "{}{}", cursor::Up(10), cursor::Column(column + 1))?;
+        write!(term, "{}{}", cursor::Up(num_choices), cursor::Column(column + 1))?;
 
         Ok(())
     }
