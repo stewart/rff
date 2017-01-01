@@ -69,26 +69,35 @@ impl Interface {
     }
 
     fn render(&mut self) -> io::Result<()> {
-        let ref mut term = self.terminal;
-        write!(term, "{}{}", clear::Screen, cursor::Column(1))?;
-        write!(term, "> {}", self.search)?;
+        write!(self.terminal, "{}{}", clear::Screen, cursor::Column(1))?;
+        write!(self.terminal, "> {}", self.search)?;
 
-        let choices = self.matching.iter().map(|c| c.text()).take(10);
-        let num_choices = choices.len() as u16;
+        let n = self.render_choices()?;
 
-        for choice in choices {
-            let choice = choice.chars().
-                take(term.max_width as usize).
-                collect::<String>();
-
-            write!(term, "\r\n{}", choice)?;
-        }
-
-        if num_choices > 0 {
+        if n > 0 {
             let column = format!("> {}", self.search).len() as u16;
-            write!(term, "{}{}", cursor::Up(num_choices), cursor::Column(column + 1))?;
+            write!(self.terminal, "{}{}", cursor::Up(n), cursor::Column(column + 1))?;
         }
 
         Ok(())
+    }
+
+    fn render_choices(&mut self) -> io::Result<u16> {
+        let max_width = self.terminal.max_width as usize;
+
+        let choices = self.matching.
+            iter().
+            map(|c| c.text()).
+            map(|c| {
+                c.chars().take(max_width).collect::<String>()
+            }).take(10);
+
+        let number_of_choices = choices.len() as u16;
+
+        for choice in choices {
+            write!(self.terminal, "\r\n{}", choice)?;
+        }
+
+        Ok(number_of_choices)
     }
 }
