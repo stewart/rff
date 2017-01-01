@@ -38,6 +38,11 @@ impl Interface {
                     return;
                 },
 
+                Ok(Event::Key(Key::Char('\n'))) => {
+                    self.emit();
+                    return;
+                },
+
                 Ok(Event::Key(Key::Char(ch))) => {
                     self.search.push(ch);
                     self.filter_choices();
@@ -99,5 +104,18 @@ impl Interface {
         }
 
         Ok(number_of_choices)
+    }
+
+    fn emit(&mut self) {
+        write!(self.terminal, "{}{}", cursor::Column(1), clear::Screen).unwrap();
+        self.terminal.reset();
+
+        let choice = self.matching.
+            iter().
+            map(|c| c.text()).
+            nth(0).
+            unwrap_or("");
+
+        println!("{}", choice);
     }
 }
