@@ -70,18 +70,24 @@ impl Interface {
 
     fn render(&mut self) -> io::Result<()> {
         let ref mut term = self.terminal;
-        write!(term, "{}{}", clear::Line, cursor::Column(1))?;
+        write!(term, "{}{}", clear::Screen, cursor::Column(1))?;
         write!(term, "> {}", self.search)?;
 
         let choices = self.matching.iter().map(|c| c.text()).take(10);
         let num_choices = choices.len() as u16;
 
         for choice in choices {
-            write!(term, "\r\n{}{}", clear::Line, choice)?;
+            let choice = choice.chars().
+                take(term.max_width as usize).
+                collect::<String>();
+
+            write!(term, "\r\n{}", choice)?;
         }
 
-        let column = format!("> {}", self.search).len() as u16;
-        write!(term, "{}{}", cursor::Up(num_choices), cursor::Column(column + 1))?;
+        if num_choices > 0 {
+            let column = format!("> {}", self.search).len() as u16;
+            write!(term, "{}{}", cursor::Up(num_choices), cursor::Column(column + 1))?;
+        }
 
         Ok(())
     }
