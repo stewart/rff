@@ -64,6 +64,21 @@ impl Interface {
                     break;
                 },
 
+                Event::Key(Key::Ctrl('n')) => {
+                    self.selected += 1;
+                    self.clamp_selected();
+                    self.render()?;
+                },
+
+                Event::Key(Key::Ctrl('p')) => {
+                    self.selected = self.selected.
+                        checked_sub(1).
+                        unwrap_or(0);
+
+                    self.clamp_selected();
+                    self.render()?;
+                },
+
                 Event::Key(Key::Char(ch)) => {
                     self.search.push(ch);
                     self.filter_choices();
@@ -135,6 +150,16 @@ impl Interface {
         }
 
         Ok(number_of_choices)
+    }
+
+    #[inline(always)]
+    fn clamp_selected(&mut self) {
+        let mut max = self.matching.len();
+        if max > 10 { max = 10; }
+
+        if self.selected >= max {
+            self.selected = max - 1;
+        }
     }
 
     fn clear(&mut self) -> Result<(), Error> {
