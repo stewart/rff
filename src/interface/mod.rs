@@ -1,4 +1,5 @@
 mod terminal;
+mod ansi;
 
 use std::io::Write;
 use self::terminal::{Terminal, Event, Key};
