@@ -8,7 +8,7 @@ use rff::choice::Choice;
 
 #[derive(Debug)]
 pub enum Error {
-    CtrlC,
+    Exit,
     Write(io::Error),
     Reset(terminal::Error)
 }
@@ -58,7 +58,7 @@ impl Interface {
                 match key {
                     Key::Ctrl('c') => {
                         self.clear()?;
-                        return Err(Error::CtrlC);
+                        return Err(Error::Exit);
                     }
 
                     Key::Char('\n') => {

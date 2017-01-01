@@ -83,7 +83,7 @@ fn run() -> i32 {
         let mut interface = Interface::with_choices(get_choices());
         match interface.run() {
             Ok(result) => println!("{}", result),
-            Err(Error::CtrlC) => return 1,
+            Err(Error::Exit) => return 1,
             Err(e) => {
                 println!("error: {:?}", e);
                 return 1;
