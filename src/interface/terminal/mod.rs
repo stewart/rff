@@ -1,8 +1,13 @@
+mod event;
+mod input;
 use std::mem;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write, Read};
 use std::os::unix::io::AsRawFd;
 use libc::{TCSANOW, termios, c_int};
+
+pub use self::input::*;
+pub use self::event::*;
 
 extern {
     fn tcgetattr(filedes: c_int, termptr: *mut termios) -> c_int;
@@ -59,6 +64,10 @@ impl Terminal {
         }
 
         Ok(())
+    }
+
+    pub fn events(&self) -> io::Result<Events<File>> {
+        self.file.try_clone().map(Events::new)
     }
 }
 
