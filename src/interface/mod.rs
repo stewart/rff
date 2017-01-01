@@ -73,7 +73,7 @@ impl Interface {
         write!(term, "{}{}", clear::Line, cursor::Column(1))?;
         write!(term, "> {}", self.search)?;
 
-        let choices = self.matching.iter().take(10);
+        let choices = self.matching.iter().map(|c| c.text()).take(10);
         let num_choices = choices.len() as u16;
 
         for choice in choices {

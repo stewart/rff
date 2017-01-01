@@ -72,7 +72,7 @@ fn main() {
         let mut stdout = BufWriter::new(stdout.lock());
 
         for choice in choices {
-            writeln!(stdout, "{}", choice).unwrap();
+            writeln!(stdout, "{}", choice.text()).unwrap();
         }
     } else {
         let mut interface = Interface::with_choices(get_choices());
