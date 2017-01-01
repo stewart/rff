@@ -54,44 +54,46 @@ impl Interface {
         self.render()?;
 
         for event in self.terminal.events()? {
-            match event? {
-                Event::Key(Key::Ctrl('c')) => {
-                    self.clear()?;
-                    return Err(Error::CtrlC);
-                },
+            if let Event::Key(key) = event? {
+                match key {
+                    Key::Ctrl('c') => {
+                        self.clear()?;
+                        return Err(Error::CtrlC);
+                    }
 
-                Event::Key(Key::Char('\n')) => {
-                    break;
-                },
+                    Key::Char('\n') => {
+                        break;
+                    },
 
-                Event::Key(Key::Ctrl('n')) => {
-                    self.selected += 1;
-                    self.clamp_selected();
-                    self.render()?;
-                },
+                    Key::Ctrl('n') => {
+                        self.selected += 1;
+                        self.clamp_selected();
+                        self.render()?;
+                    },
 
-                Event::Key(Key::Ctrl('p')) => {
-                    self.selected = self.selected.
-                        checked_sub(1).
-                        unwrap_or(0);
+                    Key::Ctrl('p') => {
+                        self.selected = self.selected.
+                            checked_sub(1).
+                            unwrap_or(0);
 
-                    self.clamp_selected();
-                    self.render()?;
-                },
+                        self.clamp_selected();
+                        self.render()?;
+                    },
 
-                Event::Key(Key::Char(ch)) => {
-                    self.search.push(ch);
-                    self.filter_choices();
-                    self.render()?;
-                },
+                    Key::Char(ch) => {
+                        self.search.push(ch);
+                        self.filter_choices();
+                        self.render()?;
+                    },
 
-                Event::Key(Key::Backspace) => {
-                    self.search.pop();
-                    self.filter_choices();
-                    self.render()?;
-                },
+                    Key::Backspace => {
+                        self.search.pop();
+                        self.filter_choices();
+                        self.render()?;
+                    }
 
-                _ => {}
+                    _ => {}
+                }
             };
         }
 
