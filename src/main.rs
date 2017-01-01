@@ -12,7 +12,6 @@ use rff::choice::Choice;
 fn main() {
     let args = env::args().skip(1).collect::<Vec<String>>();
     let mut opts = Options::new();
-    let choices = get_choices();
 
     opts.optopt("s", "search", "Output sorted matches of QUERY", "QUERY");
     opts.optflag("", "benchmark", "Run search in benchmark mode");
@@ -44,6 +43,7 @@ fn main() {
             process::exit(1);
         }
 
+        let choices = get_choices();
         let search = matches.opt_str("s").unwrap();
 
         for _ in 0..100 {
@@ -57,7 +57,7 @@ fn main() {
         }
     } else if matches.opt_present("s") {
         let search = matches.opt_str("s").unwrap();
-        let mut choices = choices.
+        let mut choices = get_choices().
             into_par_iter().
             filter_map(|choice| Choice::new(&search, choice)).
             collect::<Vec<Choice>>();
