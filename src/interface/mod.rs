@@ -3,7 +3,7 @@ mod ansi;
 
 use std::io::{self, Write};
 use self::terminal::{Terminal, Event, Key};
-use self::ansi::{clear, cursor};
+use self::ansi::{clear, cursor, style};
 use rff::choice::Choice;
 
 #[derive(Debug)]
@@ -28,6 +28,7 @@ impl From<terminal::Error> for Error {
 pub struct Interface {
     choices: Vec<String>,
     matching: Vec<Choice>,
+    selected: usize,
     search: String,
     terminal: Terminal
 }
@@ -41,6 +42,7 @@ impl Interface {
         Interface {
             choices: choices,
             matching: Vec::new(),
+            selected: 0,
             search: String::new(),
             terminal: term
         }
@@ -120,8 +122,16 @@ impl Interface {
 
         let number_of_choices = choices.len() as u16;
 
-        for choice in choices {
-            write!(self.terminal, "\r\n{}", choice)?;
+        for (i, choice) in choices.enumerate() {
+            write!(self.terminal, "\r\n")?;
+
+            if i == self.selected {
+                let invert = style::Invert;
+                let reset = style::NoInvert;
+                write!(self.terminal, "{}{}{}", invert, choice, reset)?;
+            } else {
+                write!(self.terminal, "{}", choice)?;
+            }
         }
 
         Ok(number_of_choices)
@@ -134,6 +144,9 @@ impl Interface {
     }
 
     fn result(&mut self) -> &str {
-        self.matching.iter().map(|c| c.text()).nth(0).unwrap_or("")
+        self.matching.iter().
+            map(|c| c.text()).
+            nth(self.selected).
+            unwrap_or(&self.search)
     }
 }
