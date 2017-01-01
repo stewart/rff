@@ -80,6 +80,15 @@ impl Terminal {
         Ok(())
     }
 
+    pub fn reset(&mut self) {
+        if let Some(opts) = self.prev_termios {
+            let fd = self.file.as_raw_fd();
+
+            // disable raw mode, by setting the original termios
+            unsafe { tcsetattr(fd, TCSANOW, &opts); }
+        }
+    }
+
     pub fn events(&self) -> io::Result<Events<File>> {
         self.file.try_clone().map(Events::new)
     }
@@ -103,12 +112,7 @@ impl Write for Terminal {
 
 impl Drop for Terminal {
     fn drop(&mut self) {
-        if let Some(opts) = self.prev_termios {
-            let fd = self.file.as_raw_fd();
-
-            // disable raw mode, by setting the original termios
-            unsafe { tcsetattr(fd, TCSANOW, &opts); }
-        }
+        self.reset();
     }
 }
 
