@@ -2,6 +2,8 @@ extern crate getopts;
 extern crate rayon;
 extern crate rff;
 
+mod interface;
+
 use std::env;
 use std::io::{self, BufRead, Write, BufWriter};
 use std::process;
