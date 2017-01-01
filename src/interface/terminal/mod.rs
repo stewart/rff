@@ -4,7 +4,7 @@ use std::mem;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write, Read};
 use std::os::unix::io::AsRawFd;
-use libc::{TCSANOW, termios, c_int};
+use libc::{TCSANOW, TIOCGWINSZ, termios, winsize, c_int, c_ulong};
 
 pub use self::input::*;
 pub use self::event::*;
@@ -13,6 +13,7 @@ extern {
     fn tcgetattr(filedes: c_int, termptr: *mut termios) -> c_int;
     fn tcsetattr(filedes: c_int, opt: c_int, termptr: *const termios) -> c_int;
     fn cfmakeraw(termptr: *mut termios);
+    fn ioctl(fd: c_int, request: c_ulong, ...) -> c_int;
 }
 
 #[derive(Debug)]
@@ -23,18 +24,31 @@ pub enum Error {
 
 pub struct Terminal {
     file: File,
-    prev_termios: Option<termios>
+    prev_termios: Option<termios>,
+    pub max_width: u16,
+    pub max_height: u16,
 }
 
 impl Terminal {
     /// Creates a new Terminal from the provided filename
     pub fn from(filename: &str) -> io::Result<Terminal> {
         let file = OpenOptions::new().write(true).read(true).open(filename)?;
+        let fd = file.as_raw_fd();
 
-        let terminal = Terminal {
+        let mut terminal = Terminal {
             file: file,
-            prev_termios: None
+            prev_termios: None,
+            max_width: 80,
+            max_height: 25
         };
+
+        unsafe {
+            let mut ws: winsize = mem::zeroed();
+            if ioctl(fd, TIOCGWINSZ, &mut ws) != -1 {
+                terminal.max_width = ws.ws_col;
+                terminal.max_height = ws.ws_row;
+            }
+        }
 
         Ok(terminal)
     }
