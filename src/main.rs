@@ -11,7 +11,7 @@ use std::process;
 use rayon::prelude::*;
 use getopts::{Options, Fail};
 use rff::choice::Choice;
-use interface::Interface;
+use interface::{Interface, Error};
 
 fn main() {
     let args = env::args().skip(1).collect::<Vec<String>>();
@@ -76,7 +76,14 @@ fn main() {
         }
     } else {
         let mut interface = Interface::with_choices(get_choices());
-        interface.run()
+        match interface.run() {
+            Ok(result) => println!("{}", result),
+            Err(Error::CtrlC) => process::exit(1),
+            Err(e) => {
+                println!("error: {:?}", e);
+                process::exit(1)
+            }
+        }
     }
 }
 

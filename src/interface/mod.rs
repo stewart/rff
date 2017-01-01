@@ -8,6 +8,7 @@ use rff::choice::Choice;
 
 #[derive(Debug)]
 pub enum Error {
+    CtrlC,
     Write(io::Error),
     Reset(terminal::Error)
 }
@@ -46,14 +47,15 @@ impl Interface {
     }
 
     // Starts the interface
-    pub fn run(&mut self) {
+    pub fn run(&mut self) -> Result<&str, Error> {
         self.filter_choices();
-        self.render().expect("Unable to render");
+        self.render()?;
 
-        for event in self.terminal.events().unwrap() {
-            match event.unwrap() {
+        for event in self.terminal.events()? {
+            match event? {
                 Event::Key(Key::Ctrl('c')) => {
-                    return;
+                    self.clear()?;
+                    return Err(Error::CtrlC);
                 },
 
                 Event::Key(Key::Char('\n')) => {
@@ -63,21 +65,21 @@ impl Interface {
                 Event::Key(Key::Char(ch)) => {
                     self.search.push(ch);
                     self.filter_choices();
-                    self.render().expect("Unable to render");
+                    self.render()?;
                 },
 
                 Event::Key(Key::Backspace) => {
                     self.search.pop();
                     self.filter_choices();
-                    self.render().expect("Unable to render");
+                    self.render()?;
                 },
 
                 _ => {}
             };
         }
 
-        self.clear().unwrap();
-        println!("{}", self.result());
+        self.clear()?;
+        Ok(self.result())
     }
 
     fn filter_choices(&mut self) {
