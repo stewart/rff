@@ -114,7 +114,7 @@ impl Interface {
     }
 
     fn render(&mut self) -> io::Result<()> {
-        write!(self.terminal, "{}{}", clear::Screen, cursor::Column(1))?;
+        write!(self.terminal, "{}{}", cursor::Column(1), clear::Screen)?;
         write!(self.terminal, "> {}", self.search)?;
 
         let n = self.render_choices()?;
