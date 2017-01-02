@@ -4,6 +4,7 @@ mod ansi;
 use std::io::{self, Write};
 use self::terminal::{Terminal, Event, Key};
 use self::ansi::{clear, cursor, style};
+use rayon::prelude::*;
 use rff::choice::Choice;
 
 #[derive(Debug)]
@@ -109,7 +110,7 @@ impl Interface {
 
     fn filter_choices(&mut self) {
         let mut matches = self.choices.
-            iter().
+            par_iter().
             cloned().
             filter_map(|choice| Choice::new(&self.search, choice)).
             collect::<Vec<_>>();
