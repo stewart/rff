@@ -56,7 +56,7 @@ impl Interface {
         for event in self.terminal.events()? {
             if let Event::Key(key) = event? {
                 match key {
-                    Key::Ctrl('c') => {
+                    Key::Ctrl('c') | Key::Ctrl('d') => {
                         self.clear()?;
                         return Err(Error::Exit);
                     }
@@ -86,7 +86,7 @@ impl Interface {
                         self.render()?;
                     },
 
-                    Key::Backspace => {
+                    Key::Backspace | Key::Ctrl('h') => {
                         self.search.pop();
                         self.filter_choices();
                         self.render()?;
