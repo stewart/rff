@@ -154,24 +154,24 @@ impl Interface {
     fn render_choices(&mut self) -> io::Result<u16> {
         let max_width = self.terminal.max_width as usize;
 
-        let choices = self.matching.
-            iter().
-            map(|c| c.text()).
-            map(|c| {
-                c.chars().take(max_width).collect::<String>()
-            }).take(10);
+        let matches = self.matching.iter().take(10);
 
-        let number_of_choices = choices.len() as u16;
+        let number_of_choices = matches.len() as u16;
 
-        for (i, choice) in choices.enumerate() {
+        for (i, choice) in matches.enumerate() {
             write!(self.terminal, "\r\n")?;
+
+            let text = choice.text()
+                .chars()
+                .take(max_width)
+                .collect::<String>();
 
             if i == self.selected {
                 let invert = style::Invert;
                 let reset = style::NoInvert;
-                write!(self.terminal, "{}{}{}", invert, choice, reset)?;
+                write!(self.terminal, "{}{}{}", invert, text, reset)?;
             } else {
-                write!(self.terminal, "{}", choice)?;
+                write!(self.terminal, "{}", text)?;
             }
         }
 
