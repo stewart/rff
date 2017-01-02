@@ -1,3 +1,7 @@
+// A port of selecta's scoring algorithm parsing.
+// selecta (c) 2014 John Hawthorn
+// Licensed under the MIT license
+
 use std::cmp::Ordering;
 use super::eq;
 use super::mat::Mat;
