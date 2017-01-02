@@ -92,6 +92,12 @@ impl Interface {
                         self.render()?;
                     }
 
+                    Key::Ctrl('u') => {
+                        self.search.clear();
+                        self.filter_choices();
+                        self.render()?;
+                    }
+
                     _ => {}
                 }
             };
