@@ -23,6 +23,7 @@ fn run() -> i32 {
     let mut opts = Options::new();
 
     opts.optopt("s", "search", "Output sorted matches of QUERY", "QUERY");
+    opts.optopt("q", "query", "Use QUERY as the initial search string", "QUERY");
     opts.optflag("", "benchmark", "Run search in benchmark mode");
     opts.optflag("h", "help", "Display this help and exit");
     opts.optflag("v", "version", "Display version information and exit");
@@ -82,7 +83,7 @@ fn run() -> i32 {
     } else {
         let opts = interface::Options {
             choices: get_choices(),
-            initial: String::new()
+            initial: matches.opt_str("q").unwrap_or(String::new())
         };
 
         let mut interface = Interface::from_opts(opts);
