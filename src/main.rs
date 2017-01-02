@@ -80,7 +80,13 @@ fn run() -> i32 {
             writeln!(stdout, "{}", choice.text()).unwrap();
         }
     } else {
-        let mut interface = Interface::with_choices(get_choices());
+        let opts = interface::Options {
+            choices: get_choices(),
+            initial: String::new()
+        };
+
+        let mut interface = Interface::from_opts(opts);
+
         match interface.run() {
             Ok(result) => println!("{}", result),
             Err(Error::Exit) => return 1,

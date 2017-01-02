@@ -26,6 +26,11 @@ impl From<terminal::Error> for Error {
     }
 }
 
+pub struct Options {
+    pub choices: Vec<String>,
+    pub initial: String,
+}
+
 pub struct Interface {
     choices: Vec<String>,
     matching: Vec<Choice>,
@@ -35,16 +40,16 @@ pub struct Interface {
 }
 
 impl Interface {
-    /// Creates a new Interface with the provided input choices.
-    pub fn with_choices(choices: Vec<String>) -> Interface {
+    /// Creates a new Interface from the provided options.
+    pub fn from_opts(opts: Options) -> Interface {
         let mut term = Terminal::from("/dev/tty").unwrap();
         term.set_raw_mode().unwrap();
 
         Interface {
-            choices: choices,
+            choices: opts.choices,
             matching: Vec::new(),
             selected: 0,
-            search: String::new(),
+            search: opts.initial,
             terminal: term
         }
     }
