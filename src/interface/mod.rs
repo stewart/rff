@@ -83,7 +83,7 @@ impl Interface {
 
                     Key::Char(ch) => {
                         self.search.push(ch);
-                        self.filter_choices();
+                        self.filter_existing_matches();
                         self.render()?;
                     },
 
@@ -112,6 +112,18 @@ impl Interface {
         let mut matches = self.choices.
             par_iter().
             cloned().
+            filter_map(|choice| Choice::new(&self.search, choice)).
+            collect::<Vec<_>>();
+
+        matches.sort_by(|a, b| b.partial_cmp(a).unwrap());
+
+        self.matching = matches;
+    }
+
+    fn filter_existing_matches(&mut self) {
+        let mut matches = self.matching.
+            par_iter().
+            map(|c| c.text().to_string()).
             filter_map(|choice| Choice::new(&self.search, choice)).
             collect::<Vec<_>>();
 
