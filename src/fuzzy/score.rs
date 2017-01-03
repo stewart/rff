@@ -56,6 +56,26 @@ impl Score {
         let score = m.get(len_n - 1, len_h - 1).unwrap_or(SCORE_MIN);
         Score::new(score)
     }
+
+    /// Calculates match positions of needle's chars, in addition to the score
+    pub fn calculate_with_positions(needle: &str, haystack: &str) -> Score {
+        let len_n = needle.len();
+        let len_h = haystack.len();
+
+        if len_n == 0 { return Score::new(SCORE_MIN); }
+
+        if len_n == len_h {
+            let positions = (0..len_n).collect();
+            return Score::with_positions(SCORE_MAX, positions);
+        }
+
+        let (m, d) = generate_score_matrices(needle, haystack);
+
+        let score = m.get(len_n - 1, len_h - 1).unwrap_or(SCORE_MIN);
+        let positions = derive_match_positions(len_n, len_h, m, d);
+
+        Score::with_positions(score, positions)
+    }
 }
 
 impl PartialOrd for Score {
@@ -114,6 +134,39 @@ fn generate_score_matrices(needle: &str, haystack: &str) -> (Mat, Mat) {
     (m, d)
 }
 
+/// Given the length of the input strings, and generated scoring matrices,
+/// generates a len_n vector of optimal match positions for each haystack char.
+#[inline]
+fn derive_match_positions(len_n: usize, len_h: usize, m: Mat, d: Mat) -> Vec<usize> {
+    let mut positions = vec![0 as usize; len_n];
+    let mut match_required = false;
+
+    let mut j = len_h - 1;
+
+    for i in (0..len_n).rev() {
+        while j > (0 as usize) {
+            let last = if i > 0 && j > 0 { d.get(i - 1, j - 1).unwrap() } else { 0.0 };
+
+            let d = d.get(i, j).unwrap();
+            let m = m.get(i, j).unwrap();
+
+            if d != SCORE_MIN && (match_required || d == m) {
+                if i > 0 && j > 0 && m == last + SCORE_MATCH_CONSECUTIVE {
+                    match_required = true;
+                }
+
+                positions[i] = j;
+
+                break;
+            }
+
+            j -= 1
+        }
+    }
+
+    positions
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -167,6 +220,23 @@ mod tests {
         // Prefer shorter scorees
         assert!(score("abc", "    a b c ") > score("abc", " a  b  c "));
         assert!(score("abc", " a b c    ") > score("abc", " a  b  c "));
+    }
+
+    #[test]
+    fn positions() {
+        macro_rules! test_positions {
+            ($needle:expr, $haystack:expr, $result:expr) => {
+                let score = Score::calculate_with_positions($needle, $haystack);
+                assert_eq!(score.positions, Some($result));
+            }
+        }
+
+        test_positions!("amo", "app/models/foo", vec![0, 4, 5]);
+        test_positions!("amor", "app/models/order", vec![0, 4, 11, 12]);
+        test_positions!("as", "tags", vec![1, 3]);
+        test_positions!("abc", "a/a/b/c/c", vec![2, 4, 6]);
+        test_positions!("foo", "foo", vec![0, 1, 2]);
+        test_positions!("drivers", "/path/to/drivers/file.txt", vec![9, 10, 11, 12, 13, 14, 15]);
     }
 
     #[bench]
