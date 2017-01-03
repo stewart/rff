@@ -174,9 +174,9 @@ impl Interface {
                     let match_position = positions.iter().any(|p| *p == i);
 
                     if match_position {
-                        let blue = color::Fg(color::Colors::LightBlue);
+                        let color = color::Fg(color::Colors::Magenta);
                         let reset = color::Fg(color::Reset);
-                        write!(self.terminal, "{}{}{}", blue, ch, reset)?;
+                        write!(self.terminal, "{}{}{}", color, ch, reset)?;
                     } else {
                         write!(self.terminal, "{}", ch)?;
                     }
