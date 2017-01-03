@@ -12,6 +12,9 @@ use super::consts::*;
 pub struct Score {
     /// The computed score value
     pub value: f32,
+
+    /// Optional vector of match positions
+    pub positions: Option<Vec<usize>>
 }
 
 impl Score {
@@ -24,7 +27,20 @@ impl Score {
     /// assert_eq!(score.value, 1.0);
     /// ```
     pub fn new(value: f32) -> Score {
-        Score { value: value }
+        Score { value: value, positions: None }
+    }
+
+    /// Creates a new Score with the provided value and match positions
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let score = rff::fuzzy::Score::with_positions(1.0, vec![1, 2, 3]);
+    /// assert_eq!(score.value, 1.0);
+    /// assert_eq!(score.positions, Some(vec![1, 2, 3]));
+    /// ```
+    pub fn with_positions(value: f32, positions: Vec<usize>) -> Score {
+        Score { value: value, positions: Some(positions) }
     }
 
     /// Creates a new Score, with value derived from provided needle / haystack
