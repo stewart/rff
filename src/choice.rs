@@ -37,6 +37,11 @@ impl Choice {
     pub fn text(&self) -> &str {
         &self.0
     }
+
+    /// Gets a ref to the Choice's positions.
+    pub fn positions(&self) -> Option<&Vec<usize>> {
+        self.1.positions.as_ref()
+    }
 }
 
 impl PartialEq for Choice {

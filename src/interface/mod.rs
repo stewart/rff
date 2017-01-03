@@ -3,7 +3,7 @@ mod ansi;
 
 use std::io::{self, Write};
 use self::terminal::{Terminal, Event, Key};
-use self::ansi::{clear, cursor, style};
+use self::ansi::{clear, color, cursor, style};
 use rayon::prelude::*;
 use rff::choice::Choice;
 
@@ -117,7 +117,7 @@ impl Interface {
         let mut matches = self.choices.
             par_iter().
             cloned().
-            filter_map(|choice| Choice::new(&self.search, choice)).
+            filter_map(|choice| Choice::with_positions(&self.search, choice)).
             collect::<Vec<_>>();
 
         matches.sort_by(|a, b| b.partial_cmp(a).unwrap());
@@ -129,7 +129,7 @@ impl Interface {
         let mut matches = self.matching.
             par_iter().
             map(|c| c.text().to_string()).
-            filter_map(|choice| Choice::new(&self.search, choice)).
+            filter_map(|choice| Choice::with_positions(&self.search, choice)).
             collect::<Vec<_>>();
 
         matches.sort_by(|a, b| b.partial_cmp(a).unwrap());
@@ -159,19 +159,40 @@ impl Interface {
         let number_of_choices = matches.len() as u16;
 
         for (i, choice) in matches.enumerate() {
+            let selected = i == self.selected;
+
             write!(self.terminal, "\r\n")?;
 
-            let text = choice.text()
-                .chars()
-                .take(max_width)
-                .collect::<String>();
+            if selected {
+                write!(self.terminal, "{}", style::Invert)?;
+            }
 
-            if i == self.selected {
-                let invert = style::Invert;
-                let reset = style::NoInvert;
-                write!(self.terminal, "{}{}{}", invert, text, reset)?;
+            if let Some(positions) = choice.positions() {
+                let chars = choice.text().chars().take(max_width);
+
+                for (i, ch) in chars.enumerate() {
+                    let match_position = positions.iter().any(|p| *p == i);
+
+                    if match_position {
+                        let blue = color::Fg(color::Colors::LightBlue);
+                        let reset = color::Fg(color::Reset);
+                        write!(self.terminal, "{}{}{}", blue, ch, reset)?;
+                    } else {
+                        write!(self.terminal, "{}", ch)?;
+                    }
+                }
+
             } else {
+                let text = choice.text()
+                    .chars()
+                    .take(max_width)
+                    .collect::<String>();
+
                 write!(self.terminal, "{}", text)?;
+            }
+
+            if selected {
+                write!(self.terminal, "{}", style::NoInvert)?;
             }
         }
 
