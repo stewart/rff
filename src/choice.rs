@@ -23,6 +23,16 @@ impl Choice {
         }
     }
 
+    /// Creates a new Choice with derived match positions
+    pub fn with_positions(needle: &str, haystack: String) -> Option<Choice> {
+        if matches(&needle, &haystack) {
+            let score = Score::calculate_with_positions(&needle, &haystack);
+            Some(Choice(haystack, score))
+        } else {
+            None
+        }
+    }
+
     /// Gets the Choice's text as a &str.
     pub fn text(&self) -> &str {
         &self.0
