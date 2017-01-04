@@ -36,7 +36,8 @@ pub struct Interface {
     matching: Vec<Choice>,
     selected: usize,
     search: String,
-    terminal: Terminal
+    width: usize,
+    terminal: Terminal,
 }
 
 impl Interface {
@@ -50,6 +51,7 @@ impl Interface {
             matching: Vec::new(),
             selected: 0,
             search: opts.initial,
+            width: term.max_width,
             terminal: term
         }
     }
@@ -154,12 +156,11 @@ impl Interface {
     }
 
     fn render_matches(&mut self) -> io::Result<()> {
-        let max_width = self.terminal.max_width;
         let matches = self.matching.iter().take(10);
 
         for (i, choice) in matches.enumerate() {
             let selected = i == self.selected;
-            let chars = choice.text().chars().take(max_width);
+            let chars = choice.text().chars().take(self.width);
 
             write!(self.terminal, "\r\n")?;
 
