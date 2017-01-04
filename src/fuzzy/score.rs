@@ -170,7 +170,6 @@ fn derive_match_positions(len_n: usize, len_h: usize, m: Mat, d: Mat) -> Vec<usi
 #[cfg(test)]
 mod tests {
     use super::*;
-    use test::Bencher;
 
     fn score(needle: &str, haystack: &str) -> Score {
         Score::calculate(needle, haystack)
@@ -238,22 +237,4 @@ mod tests {
         test_positions!("foo", "foo", vec![0, 1, 2]);
         test_positions!("drivers", "/path/to/drivers/file.txt", vec![9, 10, 11, 12, 13, 14, 15]);
     }
-
-    #[bench]
-    fn bench_score(b: &mut Bencher) {
-        b.iter(|| Score::calculate("amor", "app/models/order.rb"))
-    }
-
-    #[bench]
-    fn bench_score_multiple(b: &mut Bencher) {
-        b.iter(|| {
-            Score::calculate("amor", "app/models/order.rb");
-            Score::calculate("amor", "spec/models/order_spec.rb");
-            Score::calculate("amor", "other_garbage.rb");
-            Score::calculate("amor", "Gemfile");
-            Score::calculate("amor", "node_modules/test/a/thing.js");
-            Score::calculate("amor", "vendor/bundle/ruby/gem.rb")
-        })
-    }
-
 }

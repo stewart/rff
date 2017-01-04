@@ -1,6 +1,3 @@
-#![feature(test)]
-extern crate test;
-
 pub mod fuzzy;
 pub mod choice;
 

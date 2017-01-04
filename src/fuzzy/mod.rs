@@ -1,6 +1,6 @@
 mod mat;
-mod bonus;
-mod score;
+pub mod bonus;
+pub mod score;
 pub mod consts;
 
 use std::ascii::AsciiExt;
@@ -45,7 +45,6 @@ fn eq(a: char, b: char) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use test::Bencher;
 
     #[test]
     fn test_eq() {
@@ -79,60 +78,5 @@ mod tests {
         assert!(matches("山", "山"));
         assert!(matches("café", "CAFÉ"));
         assert!(matches("weiß", "WEIẞ"));
-    }
-
-    #[bench]
-    fn bench_eq_same(b: &mut Bencher) {
-        b.iter(|| eq('a', 'a'));
-    }
-
-    #[bench]
-    fn bench_eq_ascii(b: &mut Bencher) {
-        b.iter(|| eq('a', 'A'));
-    }
-
-    #[bench]
-    fn bench_eq_utf8(b: &mut Bencher) {
-        b.iter(|| eq('ø', 'Ø'));
-    }
-
-    #[bench]
-    fn bench_eq_mixed(b: &mut Bencher) {
-        b.iter(|| eq('a', 'Ø'));
-    }
-
-    #[bench]
-    fn bench_matches(b: &mut Bencher) {
-        b.iter(|| matches("amor", "app/models/order.rb"))
-    }
-
-    #[bench]
-    fn bench_matches_more_specific(b: &mut Bencher) {
-        b.iter(|| matches("app/models", "app/models/order.rb"))
-    }
-
-    #[bench]
-    fn bench_matches_mixed_case(b: &mut Bencher) {
-        b.iter(|| matches("AMOr", "App/Models/Order.rb"))
-    }
-
-    #[bench]
-    fn bench_matches_multiple(b: &mut Bencher) {
-        b.iter(|| {
-            matches("amor", "app/models/order.rb");
-            matches("amor", "spec/models/order_spec.rb");
-            matches("amor", "other_garbage.rb");
-            matches("amor", "Gemfile");
-            matches("amor", "node_modules/test/a/thing.js");
-            matches("amor", "vendor/bundle/ruby/gem.rb")
-        })
-    }
-
-    #[bench]
-    fn bench_matches_eq(b: &mut Bencher) {
-        b.iter(|| {
-            matches("Gemfile", "Gemfile");
-            matches("gemfile", "Gemfile")
-        })
     }
 }

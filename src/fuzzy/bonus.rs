@@ -36,7 +36,6 @@ fn bonus_for_prev(ch: char) -> f32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use test::Bencher;
 
     #[test]
     fn test_compute_bonus() {
@@ -70,10 +69,5 @@ mod tests {
         assert_eq!(for_char('.', '0'), SCORE_MATCH_DOT);
 
         assert_eq!(for_char('a', 'A'), SCORE_MATCH_CAPITAL);
-    }
-
-    #[bench]
-    fn bench_compute_bonus(b: &mut Bencher) {
-        b.iter(|| compute_bonus("App/Models/Order"))
     }
 }
