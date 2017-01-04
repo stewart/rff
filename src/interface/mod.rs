@@ -139,23 +139,24 @@ impl Interface {
         self.matching = matches;
     }
 
-    fn render(&mut self) -> io::Result<()> {
-        write!(self.terminal, "{}{}", cursor::Column(1), clear::Screen)?;
-        write!(self.terminal, "> {}", self.search)?;
-        self.render_matches()?;
-        Ok(())
+    fn prompt(&self) -> String {
+        format!("> {}", self.search)
     }
 
-    fn render_matches(&mut self) -> io::Result<()> {
-        let mut term = BufWriter::new(&mut self.terminal);
+    fn render(&mut self) -> io::Result<()> {
+        let prompt = self.prompt();
         let matches = self.matching.iter().take(10);
         let n = matches.len() as u16;
 
+        let mut term = BufWriter::new(&mut self.terminal);
+
+        write!(term, "{}{}{}", cursor::Column(1), clear::Screen, prompt)?;
+
         for (i, choice) in matches.enumerate() {
+            write!(term, "\r\n")?;
+
             let selected = i == self.selected;
             let chars = choice.text().chars().take(self.width);
-
-            write!(term, "\r\n")?;
 
             if selected {
                 write!(term, "{}", style::Invert)?;
@@ -184,8 +185,8 @@ impl Interface {
         }
 
         if n > 0 {
-            let column = format!("> {}", self.search).len() as u16;
-            write!(term, "{}{}", cursor::Up(n), cursor::Column(column + 1))?;
+            let col = (prompt.len() + 1) as u16;
+            write!(term, "{}{}", cursor::Up(n), cursor::Column(col))?;
         }
 
         Ok(())
