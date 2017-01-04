@@ -142,22 +142,14 @@ impl Interface {
     fn render(&mut self) -> io::Result<()> {
         write!(self.terminal, "{}{}", cursor::Column(1), clear::Screen)?;
         write!(self.terminal, "> {}", self.search)?;
-
-        let n = self.matching.iter().take(10).len() as u16;
-
         self.render_matches()?;
-
-        if n > 0 {
-            let column = format!("> {}", self.search).len() as u16;
-            write!(self.terminal, "{}{}", cursor::Up(n), cursor::Column(column + 1))?;
-        }
-
         Ok(())
     }
 
     fn render_matches(&mut self) -> io::Result<()> {
         let mut term = BufWriter::new(&mut self.terminal);
         let matches = self.matching.iter().take(10);
+        let n = matches.len() as u16;
 
         for (i, choice) in matches.enumerate() {
             let selected = i == self.selected;
@@ -189,6 +181,11 @@ impl Interface {
             if selected {
                 write!(term, "{}", style::NoInvert)?;
             }
+        }
+
+        if n > 0 {
+            let column = format!("> {}", self.search).len() as u16;
+            write!(term, "{}{}", cursor::Up(n), cursor::Column(column + 1))?;
         }
 
         Ok(())
