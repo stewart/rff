@@ -152,7 +152,7 @@ impl Interface {
     }
 
     fn render_choices(&mut self) -> io::Result<u16> {
-        let max_width = self.terminal.max_width as usize;
+        let max_width = self.terminal.max_width;
 
         let matches = self.matching.iter().take(10);
 

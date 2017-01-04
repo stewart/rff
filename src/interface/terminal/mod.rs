@@ -25,8 +25,8 @@ pub enum Error {
 pub struct Terminal {
     file: File,
     prev_termios: Option<termios>,
-    pub max_width: u16,
-    pub max_height: u16,
+    pub max_width: usize,
+    pub max_height: usize
 }
 
 impl Terminal {
@@ -45,8 +45,8 @@ impl Terminal {
         unsafe {
             let mut ws: winsize = mem::zeroed();
             if ioctl(fd, TIOCGWINSZ, &mut ws) != -1 {
-                terminal.max_width = ws.ws_col;
-                terminal.max_height = ws.ws_row;
+                terminal.max_width = ws.ws_col as usize;
+                terminal.max_height = ws.ws_row as usize;
             }
         }
 
