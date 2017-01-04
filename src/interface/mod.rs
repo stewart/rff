@@ -1,7 +1,7 @@
 mod terminal;
 mod ansi;
 
-use std::io::{self, Write};
+use std::io::{self, Write, BufWriter};
 use self::terminal::{Terminal, Event, Key};
 use self::ansi::{clear, color, cursor, style};
 use rayon::prelude::*;
@@ -156,16 +156,17 @@ impl Interface {
     }
 
     fn render_matches(&mut self) -> io::Result<()> {
+        let mut term = BufWriter::new(&mut self.terminal);
         let matches = self.matching.iter().take(10);
 
         for (i, choice) in matches.enumerate() {
             let selected = i == self.selected;
             let chars = choice.text().chars().take(self.width);
 
-            write!(self.terminal, "\r\n")?;
+            write!(term, "\r\n")?;
 
             if selected {
-                write!(self.terminal, "{}", style::Invert)?;
+                write!(term, "{}", style::Invert)?;
             }
 
             if let Some(positions) = choice.positions() {
@@ -175,18 +176,18 @@ impl Interface {
                     if match_position {
                         let color = color::Fg(color::Colors::Magenta);
                         let reset = color::Fg(color::Reset);
-                        write!(self.terminal, "{}{}{}", color, ch, reset)?;
+                        write!(term, "{}{}{}", color, ch, reset)?;
                     } else {
-                        write!(self.terminal, "{}", ch)?;
+                        write!(term, "{}", ch)?;
                     }
                 }
 
             } else {
-                write!(self.terminal, "{}", chars.collect::<String>())?;
+                write!(term, "{}", chars.collect::<String>())?;
             }
 
             if selected {
-                write!(self.terminal, "{}", style::NoInvert)?;
+                write!(term, "{}", style::NoInvert)?;
             }
         }
 
