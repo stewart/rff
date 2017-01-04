@@ -141,7 +141,9 @@ impl Interface {
         write!(self.terminal, "{}{}", cursor::Column(1), clear::Screen)?;
         write!(self.terminal, "> {}", self.search)?;
 
-        let n = self.render_choices()?;
+        let n = self.matching.iter().take(10).len() as u16;
+
+        self.render_matches()?;
 
         if n > 0 {
             let column = format!("> {}", self.search).len() as u16;
@@ -151,12 +153,9 @@ impl Interface {
         Ok(())
     }
 
-    fn render_choices(&mut self) -> io::Result<u16> {
+    fn render_matches(&mut self) -> io::Result<()> {
         let max_width = self.terminal.max_width;
-
         let matches = self.matching.iter().take(10);
-
-        let number_of_choices = matches.len() as u16;
 
         for (i, choice) in matches.enumerate() {
             let selected = i == self.selected;
@@ -196,7 +195,7 @@ impl Interface {
             }
         }
 
-        Ok(number_of_choices)
+        Ok(())
     }
 
     #[inline(always)]
