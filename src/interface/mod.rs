@@ -33,6 +33,7 @@ pub struct Options {
 
 pub struct Interface {
     choices: Vec<String>,
+    choices_width: usize,
     matching: Vec<Choice>,
     selected: usize,
     search: String,
@@ -46,8 +47,11 @@ impl Interface {
         let mut term = Terminal::from("/dev/tty").unwrap();
         term.set_raw_mode().unwrap();
 
+        let choices_width = format!("{}", opts.choices.len()).len();
+
         Interface {
             choices: opts.choices,
+            choices_width: choices_width,
             matching: Vec::new(),
             selected: 0,
             search: opts.initial,
@@ -140,7 +144,8 @@ impl Interface {
     }
 
     fn prompt(&self) -> String {
-        format!("> {}", self.search)
+        let count = self.matching.len();
+        format!("{:width$} > {}", count, self.search, width = self.choices_width)
     }
 
     fn render(&mut self) -> io::Result<()> {
