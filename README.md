@@ -50,7 +50,7 @@ Interestingly, the macOS implementation of `strpbrk(3)` appears to be not nearly
 
 ### TODO
 
-- [ ] highlight match positions in interactive mode
+- [x] highlight match positions in interactive mode
 - [ ] explore using `strpbrk` on Linux for performance
 
 [fzy]: https://github.com/jhawthorn/fzy
