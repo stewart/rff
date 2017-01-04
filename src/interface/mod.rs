@@ -159,6 +159,7 @@ impl Interface {
 
         for (i, choice) in matches.enumerate() {
             let selected = i == self.selected;
+            let chars = choice.text().chars().take(max_width);
 
             write!(self.terminal, "\r\n")?;
 
@@ -167,8 +168,6 @@ impl Interface {
             }
 
             if let Some(positions) = choice.positions() {
-                let chars = choice.text().chars().take(max_width);
-
                 for (i, ch) in chars.enumerate() {
                     let match_position = positions.iter().any(|p| *p == i);
 
@@ -182,12 +181,7 @@ impl Interface {
                 }
 
             } else {
-                let text = choice.text()
-                    .chars()
-                    .take(max_width)
-                    .collect::<String>();
-
-                write!(self.terminal, "{}", text)?;
+                write!(self.terminal, "{}", chars.collect::<String>())?;
             }
 
             if selected {
