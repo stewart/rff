@@ -79,16 +79,11 @@ impl Interface {
 
                     Key::Ctrl('n') => {
                         self.selected += 1;
-                        self.clamp_selected();
                         self.render()?;
                     },
 
                     Key::Ctrl('p') => {
-                        self.selected = self.selected.
-                            checked_sub(1).
-                            unwrap_or(0);
-
-                        self.clamp_selected();
+                        self.selected = self.selected.saturating_sub(1);
                         self.render()?;
                     },
 
@@ -149,6 +144,9 @@ impl Interface {
     }
 
     fn render(&mut self) -> io::Result<()> {
+        // ensure selected index is within bounds
+        self.clamp_selected();
+
         let prompt = self.prompt();
         let matches = self.matches.iter().take(10);
         let n = matches.len() as u16;
@@ -196,13 +194,12 @@ impl Interface {
         Ok(())
     }
 
-    #[inline(always)]
     fn clamp_selected(&mut self) {
         let mut max = self.matches.len();
         if max > 10 { max = 10; }
 
         if self.selected >= max {
-            self.selected = max - 1;
+            self.selected = if max > 0 { max - 1 } else { 0 };
         }
     }
 
