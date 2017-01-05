@@ -33,10 +33,10 @@ This benchmark was run on Arch Linux:
     $ find ~/dev/linux -type f > files
 
     $ cat files | time fzy -e drivers --benchmark
-    fzy -e drivers --benchmark  1.40s user 0.02s system 118% cpu 1.203 total
+    fzy -e drivers --benchmark  1.36s user 0.02s system 117% cpu 1.178 total
 
     $ cat files | time rff -s drivers --benchmark
-    rff -s drivers --benchmark  7.54s user 0.10s system 353% cpu 2.163 total
+    rff -s drivers --benchmark  6.16s user 0.12s system 350% cpu 1.793 total
 
 Interestingly, the macOS implementation of `strpbrk(3)` appears to be not nearly as well optimized, resulting in much slower matching for `fzy`:
 
