@@ -33,8 +33,8 @@ pub struct Options {
 
 pub struct Interface {
     choices: Vec<String>,
+    matches: Vec<Choice>,
     choices_width: usize,
-    matching: Vec<Choice>,
     selected: usize,
     search: String,
     width: usize,
@@ -51,8 +51,8 @@ impl Interface {
 
         Interface {
             choices: opts.choices,
+            matches: Vec::new(),
             choices_width: choices_width,
-            matching: Vec::new(),
             selected: 0,
             search: opts.initial,
             width: term.max_width,
@@ -128,11 +128,11 @@ impl Interface {
 
         matches.sort_by(|a, b| b.partial_cmp(a).unwrap());
 
-        self.matching = matches;
+        self.matches = matches;
     }
 
     fn filter_existing_matches(&mut self) {
-        let mut matches = self.matching.
+        let mut matches = self.matches.
             par_iter().
             map(|c| c.text().to_string()).
             filter_map(|choice| Choice::with_positions(&self.search, choice)).
@@ -140,17 +140,17 @@ impl Interface {
 
         matches.sort_by(|a, b| b.partial_cmp(a).unwrap());
 
-        self.matching = matches;
+        self.matches = matches;
     }
 
     fn prompt(&self) -> String {
-        let count = self.matching.len();
+        let count = self.matches.len();
         format!("{:width$} > {}", count, self.search, width = self.choices_width)
     }
 
     fn render(&mut self) -> io::Result<()> {
         let prompt = self.prompt();
-        let matches = self.matching.iter().take(10);
+        let matches = self.matches.iter().take(10);
         let n = matches.len() as u16;
 
         let mut term = BufWriter::new(&mut self.terminal);
@@ -181,7 +181,7 @@ impl Interface {
 
     #[inline(always)]
     fn clamp_selected(&mut self) {
-        let mut max = self.matching.len();
+        let mut max = self.matches.len();
         if max > 10 { max = 10; }
 
         if self.selected >= max {
@@ -196,7 +196,7 @@ impl Interface {
     }
 
     fn result(&mut self) -> &str {
-        self.matching.iter().
+        self.matches.iter().
             map(|c| c.text()).
             nth(self.selected).
             unwrap_or(&self.search)
