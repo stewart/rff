@@ -158,16 +158,33 @@ impl Interface {
         write!(term, "{}{}{}", cursor::Column(1), clear::Screen, prompt)?;
 
         for (i, choice) in matches.enumerate() {
-            write!(term, "\r\n")?;
-
             let selected = i == self.selected;
+            let chars = choice.text().chars().take(self.width);
+
+            write!(term, "\r\n")?;
 
             if selected {
                 write!(term, "{}", style::Invert)?;
-                print_choice(&mut term, choice, self.width)?;
-                write!(term, "{}", style::NoInvert)?;
+            }
+
+            if let Some(positions) = choice.positions() {
+                for (i, ch) in chars.enumerate() {
+                    let is_match = positions.iter().any(|p| *p == i);
+
+                    if is_match {
+                        let color = color::Fg(color::Colors::Magenta);
+                        let reset = color::Fg(color::Reset);
+                        write!(term, "{}{}{}", color, ch, reset)?;
+                    } else {
+                        write!(term, "{}", ch)?;
+                    }
+                }
             } else {
-                print_choice(&mut term, choice, self.width)?;
+                write!(term, "{}", chars.collect::<String>())?;
+            }
+
+            if selected {
+                write!(term, "{}", style::NoInvert)?;
             }
         }
 
@@ -201,26 +218,4 @@ impl Interface {
             nth(self.selected).
             unwrap_or(&self.search)
     }
-}
-
-fn print_choice(term: &mut BufWriter<&mut Terminal>, choice: &Choice, max_width: usize) -> io::Result<()> {
-    let chars = choice.text().chars().take(max_width);
-
-    if let Some(positions) = choice.positions() {
-        for (i, ch) in chars.enumerate() {
-            let is_match = positions.iter().any(|p| *p == i);
-
-            if is_match {
-                let color = color::Fg(color::Colors::Magenta);
-                let reset = color::Fg(color::Reset);
-                write!(term, "{}{}{}", color, ch, reset)?;
-            } else {
-                write!(term, "{}", ch)?;
-            }
-        }
-    } else {
-        write!(term, "{}", chars.collect::<String>())?;
-    }
-
-    Ok(())
 }
