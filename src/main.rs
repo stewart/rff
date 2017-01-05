@@ -47,29 +47,31 @@ fn run() -> i32 {
         return 0;
     }
 
+    let choices = get_choices();
+
     if matches.opt_present("benchmark") {
         if !matches.opt_present("s") {
             println!("Must specify -s/--search with --benchmark");
             return 1;
         }
 
-        let choices = get_choices();
+        let choices = choices.iter().map(|x| &x[..]).collect::<Vec<&str>>();
         let search = matches.opt_str("s").unwrap();
 
         for _ in 0..100 {
             let mut choices = choices.
                 par_iter().
-                cloned().
-                filter_map(|choice| Choice::new(&search, choice)).
+                filter_map(|choice| Choice::new(&search, *choice)).
                 collect::<Vec<Choice>>();
 
             choices.sort_by(|a, b| b.partial_cmp(a).unwrap());
         }
     } else if matches.opt_present("s") {
         let search = matches.opt_str("s").unwrap();
-        let mut choices = get_choices().
-            into_par_iter().
-            filter_map(|choice| Choice::new(&search, choice)).
+
+        let mut choices = choices.
+            par_iter().
+            filter_map(|choice| Choice::new(&search, &choice)).
             collect::<Vec<Choice>>();
 
         choices.sort_by(|a, b| b.partial_cmp(a).unwrap());
@@ -81,8 +83,10 @@ fn run() -> i32 {
             writeln!(stdout, "{}", choice.text()).unwrap();
         }
     } else {
+        let choices = choices.iter().map(|x| &x[..]).collect::<Vec<&str>>();
+
         let opts = interface::Options {
-            choices: get_choices(),
+            choices: choices,
             initial: matches.opt_str("q").unwrap_or(String::new())
         };
 

@@ -3,18 +3,18 @@ use fuzzy::{matches, Score};
 
 /// A Choice wraps a String and it's calculated Score
 #[derive(Debug)]
-pub struct Choice(String, Score);
+pub struct Choice<'a>(&'a str, Score);
 
-impl Choice {
+impl<'a> Choice<'a> {
     /// Creates a new Choice if the needle matches the haystack.
     ///
     /// # Examples
     ///
     /// ```
     /// use rff::choice::Choice;
-    /// assert!(Choice::new("amo", String::from("app/models/order")).is_some());
+    /// assert!(Choice::new("amo", "app/models/order").is_some());
     /// ```
-    pub fn new(needle: &str, haystack: String) -> Option<Choice> {
+    pub fn new(needle: &str, haystack: &'a str) -> Option<Choice<'a>> {
         if matches(&needle, &haystack) {
             let score = Score::calculate(&needle, &haystack);
             Some(Choice(haystack, score))
@@ -24,7 +24,7 @@ impl Choice {
     }
 
     /// Creates a new Choice with derived match positions
-    pub fn with_positions(needle: &str, haystack: String) -> Option<Choice> {
+    pub fn with_positions(needle: &str, haystack: &'a str) -> Option<Choice<'a>> {
         if matches(&needle, &haystack) {
             let score = Score::calculate_with_positions(&needle, &haystack);
             Some(Choice(haystack, score))
@@ -44,13 +44,13 @@ impl Choice {
     }
 }
 
-impl PartialEq for Choice {
+impl<'a> PartialEq for Choice<'a> {
     fn eq(&self, other: &Choice) -> bool {
         self.1.eq(&other.1)
     }
 }
 
-impl PartialOrd for Choice {
+impl<'a> PartialOrd for Choice<'a> {
     fn partial_cmp(&self, other: &Choice) -> Option<Ordering> {
         self.1.partial_cmp(&other.1)
     }
@@ -62,8 +62,8 @@ mod tests {
 
     #[test]
     fn partial_cmp() {
-        let a = Choice::new("amor", String::from("app/models/order")).unwrap();
-        let b = Choice::new("amor", String::from("app/models/zrder")).unwrap();
+        let a = Choice::new("amor", "app/models/order").unwrap();
+        let b = Choice::new("amor", "app/models/zrder").unwrap();
 
         assert!(a > b);
     }

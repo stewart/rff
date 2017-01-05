@@ -26,14 +26,14 @@ impl From<terminal::Error> for Error {
     }
 }
 
-pub struct Options {
-    pub choices: Vec<String>,
+pub struct Options<'a> {
+    pub choices: Vec<&'a str>,
     pub initial: String,
 }
 
-pub struct Interface {
-    choices: Vec<String>,
-    matches: Vec<Choice>,
+pub struct Interface<'a> {
+    choices: Vec<&'a str>,
+    matches: Vec<Choice<'a>>,
     choices_width: usize,
     selected: usize,
     search: String,
@@ -41,9 +41,9 @@ pub struct Interface {
     terminal: Terminal,
 }
 
-impl Interface {
+impl<'a> Interface<'a> {
     /// Creates a new Interface from the provided options.
-    pub fn from_opts(opts: Options) -> Interface {
+    pub fn from_opts(opts: Options<'a>) -> Interface<'a> {
         let mut term = Terminal::from("/dev/tty").unwrap();
         term.set_raw_mode().unwrap();
 
@@ -89,7 +89,7 @@ impl Interface {
 
                     Key::Char(ch) => {
                         self.search.push(ch);
-                        self.filter_existing_matches();
+                        self.filter_choices();
                         self.render()?;
                     },
 
@@ -117,19 +117,6 @@ impl Interface {
     fn filter_choices(&mut self) {
         let mut matches = self.choices.
             par_iter().
-            cloned().
-            filter_map(|choice| Choice::with_positions(&self.search, choice)).
-            collect::<Vec<_>>();
-
-        matches.sort_by(|a, b| b.partial_cmp(a).unwrap());
-
-        self.matches = matches;
-    }
-
-    fn filter_existing_matches(&mut self) {
-        let mut matches = self.matches.
-            par_iter().
-            map(|c| c.text().to_string()).
             filter_map(|choice| Choice::with_positions(&self.search, choice)).
             collect::<Vec<_>>();
 

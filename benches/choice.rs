@@ -8,5 +8,5 @@ use rff::choice::Choice;
 
 #[bench]
 fn create_choice(b: &mut Bencher) {
-    b.iter(|| Choice::new("app/models", String::from("app/models/order")))
+    b.iter(|| Choice::new("app/models", "app/models/order"))
 }
