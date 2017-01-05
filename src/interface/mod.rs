@@ -167,9 +167,7 @@ impl Interface {
 
             if let Some(positions) = choice.positions() {
                 for (i, ch) in chars.enumerate() {
-                    let is_match = positions.iter().any(|p| *p == i);
-
-                    if is_match {
+                    if positions.contains(&i) {
                         let color = color::Fg(color::Colors::Magenta);
                         let reset = color::Fg(color::Reset);
                         write!(term, "{}{}{}", color, ch, reset)?;
