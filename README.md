@@ -43,10 +43,10 @@ Interestingly, the macOS implementation of `strpbrk(3)` appears to be not nearly
     $ find ~/dev/linux -type f > files
 
     $ cat files | time fzy -e drivers --benchmark
-    fzy -e drivers --benchmark  13.50s user 0.10s system 166% cpu 8.177 total
+    fzy -e drivers --benchmark  13.17s user 0.05s system 169% cpu 7.792 total
 
     $ cat files | time rff -s drivers --benchmark
-    rff -s drivers --benchmark  11.35s user 0.11s system 343% cpu 3.332 total
+    rff -s drivers --benchmark  11.73s user 0.06s system 358% cpu 3.290 total
 
 ### TODO
 
