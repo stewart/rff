@@ -55,13 +55,12 @@ fn run() -> i32 {
             return 1;
         }
 
-        let choices = choices.iter().map(|x| &x[..]).collect::<Vec<&str>>();
         let search = matches.opt_str("s").unwrap();
 
         for _ in 0..100 {
             let mut choices = choices.
                 par_iter().
-                filter_map(|choice| Choice::new(&search, *choice)).
+                filter_map(|choice| Choice::new(&search, &choice)).
                 collect::<Vec<Choice>>();
 
             choices.sort_by(|a, b| b.partial_cmp(a).unwrap());
