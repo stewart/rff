@@ -69,7 +69,7 @@ impl<'a> Interface<'a> {
             if let Event::Key(key) = event? {
                 match key {
                     Key::Ctrl('c') | Key::Ctrl('d') => {
-                        self.clear()?;
+                        self.reset()?;
                         return Err(Error::Exit);
                     }
 
@@ -110,7 +110,7 @@ impl<'a> Interface<'a> {
             };
         }
 
-        self.clear()?;
+        self.reset()?;
         Ok(self.result())
     }
 
@@ -188,7 +188,7 @@ impl<'a> Interface<'a> {
         }
     }
 
-    fn clear(&mut self) -> Result<(), Error> {
+    fn reset(&mut self) -> Result<(), Error> {
         write!(self.terminal, "{}{}", cursor::Column(1), clear::Screen)?;
         self.terminal.reset()?;
         Ok(())
