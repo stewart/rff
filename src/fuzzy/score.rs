@@ -11,7 +11,7 @@ use super::consts::*;
 #[derive(Debug)]
 pub struct Score {
     /// The computed score value
-    pub value: f32,
+    pub value: f64,
 
     /// Optional vector of match positions
     pub positions: Option<Vec<usize>>
@@ -26,7 +26,7 @@ impl Score {
     /// let score = rff::fuzzy::Score::new(1.0);
     /// assert_eq!(score.value, 1.0);
     /// ```
-    pub fn new(value: f32) -> Score {
+    pub fn new(value: f64) -> Score {
         Score { value: value, positions: None }
     }
 
@@ -39,7 +39,7 @@ impl Score {
     /// assert_eq!(score.value, 1.0);
     /// assert_eq!(score.positions, Some(vec![1, 2, 3]));
     /// ```
-    pub fn with_positions(value: f32, positions: Vec<usize>) -> Score {
+    pub fn with_positions(value: f64, positions: Vec<usize>) -> Score {
         Score { value: value, positions: Some(positions) }
     }
 
@@ -111,7 +111,7 @@ fn generate_score_matrices(needle: &str, haystack: &str) -> (Mat, Mat) {
                 let bonus_score = bonus[j];
 
                 if i == 0 {
-                    score = ((j as f32) * SCORE_GAP_LEADING) + bonus_score;
+                    score = ((j as f64) * SCORE_GAP_LEADING) + bonus_score;
                 } else if j > 0 {
                     let m = m.get(i - 1, j - 1).unwrap();
                     let d = d.get(i - 1, j - 1).unwrap();

@@ -3,11 +3,11 @@ pub enum Error {
     InvalidIndex
 }
 
-/// The Mat struct represents a matrix of scores as a 2D vector of f32s
+/// The Mat struct represents a matrix of scores as a 2D vector of f64s
 #[derive(Debug)]
 pub struct Mat {
     cols: usize,
-    contents: Vec<f32>
+    contents: Vec<f64>
 }
 
 impl Mat {
@@ -20,19 +20,19 @@ impl Mat {
     }
 
     /// Gets the value at the given coordinates
-    pub fn get(&self, x: usize, y: usize) -> Option<f32> {
+    pub fn get(&self, x: usize, y: usize) -> Option<f64> {
         self.contents.get(x * self.cols + y).map(|y| *y)
     }
 
     /// Sets the value at the given coordinates
-    pub fn set(&mut self, x: usize, y: usize, value: f32) -> Result<(), Error> {
+    pub fn set(&mut self, x: usize, y: usize, value: f64) -> Result<(), Error> {
         let r = self.get_mut(x, y).ok_or(Error::InvalidIndex)?;
         *r = value;
         Ok(())
     }
 
     /// Gets a mutable reference to the value at the given coordinates
-    fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut f32> {
+    fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut f64> {
         self.contents.get_mut(x * self.cols + y)
     }
 }

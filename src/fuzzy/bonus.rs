@@ -1,7 +1,7 @@
 use super::consts::*;
 
 /// Calculates a vector of match bonuses from the provided string
-pub fn compute_bonus(haystack: &str) -> Vec<f32> {
+pub fn compute_bonus(haystack: &str) -> Vec<f64> {
     let mut last_char = '/';
 
     haystack.chars().map(|ch| {
@@ -11,7 +11,7 @@ pub fn compute_bonus(haystack: &str) -> Vec<f32> {
     }).collect()
 }
 
-fn for_char(prev: char, current: char) -> f32 {
+fn for_char(prev: char, current: char) -> f64 {
     match current {
         'a' ... 'z' | '0' ... '9' => bonus_for_prev(prev),
         'A' ... 'Z' => {
@@ -24,7 +24,7 @@ fn for_char(prev: char, current: char) -> f32 {
     }
 }
 
-fn bonus_for_prev(ch: char) -> f32 {
+fn bonus_for_prev(ch: char) -> f64 {
     match ch {
         '/' => SCORE_MATCH_SLASH,
         '-' | '_' | ' ' => SCORE_MATCH_WORD,
