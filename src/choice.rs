@@ -16,7 +16,7 @@ impl<'a> Choice<'a> {
     /// ```
     pub fn new(needle: &str, haystack: &'a str) -> Option<Choice<'a>> {
         if matches(&needle, &haystack) {
-            let score = Score::calculate(&needle, &haystack);
+            let score = Score::new(&needle, &haystack);
             Some(Choice(haystack, score))
         } else {
             None
@@ -26,7 +26,7 @@ impl<'a> Choice<'a> {
     /// Creates a new Choice with derived match positions
     pub fn with_positions(needle: &str, haystack: &'a str) -> Option<Choice<'a>> {
         if matches(&needle, &haystack) {
-            let score = Score::calculate_with_positions(&needle, &haystack);
+            let score = Score::with_positions(&needle, &haystack);
             Some(Choice(haystack, score))
         } else {
             None

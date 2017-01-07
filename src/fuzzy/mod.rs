@@ -15,7 +15,7 @@ pub use self::score::*;
 /// ```
 #[inline]
 pub fn matches(needle: &str, haystack: &str) -> bool {
-    if needle == haystack {
+    if needle == "" || needle == haystack {
         return true;
     }
 
@@ -23,7 +23,9 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
 
     'outer: for n in needle.chars() {
         while let Some(h) = hchars.next() {
-            if eq(h, n) { continue 'outer }
+            if eq(n, h) {
+                continue 'outer
+            }
         }
 
         return false

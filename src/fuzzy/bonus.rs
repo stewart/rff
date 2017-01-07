@@ -1,14 +1,16 @@
 use super::consts::*;
 
 /// Calculates a vector of match bonuses from the provided string
+#[inline]
 pub fn compute_bonus(haystack: &str) -> Vec<f64> {
     let mut last_char = '/';
+    let bonus = Vec::with_capacity(haystack.chars().count());
 
-    haystack.chars().map(|ch| {
-        let score = for_char(last_char, ch);
+    haystack.chars().fold(bonus, |mut vec, ch| {
+        vec.push(for_char(last_char, ch));
         last_char = ch;
-        score
-    }).collect()
+        vec
+    })
 }
 
 fn for_char(prev: char, current: char) -> f64 {

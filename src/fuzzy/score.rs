@@ -18,83 +18,83 @@ pub struct Score {
 }
 
 impl Score {
-    /// Creates a new Score with the provided value
+    /// Creates a new Score from the provided needle and haystack
     ///
     /// # Examples
     ///
     /// ```
-    /// let score = rff::fuzzy::Score::new(1.0);
-    /// assert_eq!(score.value, 1.0);
+    /// use rff::fuzzy::Score;
+    /// let score = Score::new("abc", "abc");
+    /// assert_eq!(score.value, std::f64::INFINITY);
     /// ```
-    pub fn new(value: f64) -> Score {
-        Score { value: value, positions: None }
-    }
+    pub fn new(needle: &str, haystack: &str) -> Score {
+        let len_n = needle.chars().count();
+        let len_h = haystack.chars().count();
 
-    /// Creates a new Score with the provided value and match positions
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let score = rff::fuzzy::Score::with_positions(1.0, vec![1, 2, 3]);
-    /// assert_eq!(score.value, 1.0);
-    /// assert_eq!(score.positions, Some(vec![1, 2, 3]));
-    /// ```
-    pub fn with_positions(value: f64, positions: Vec<usize>) -> Score {
-        Score { value: value, positions: Some(positions) }
-    }
-
-    /// Creates a new Score, with value derived from provided needle / haystack
-    pub fn calculate(needle: &str, haystack: &str) -> Score {
-        let len_n = needle.len();
-        let len_h = haystack.len();
-
-        if len_n == 0 { return Score::new(SCORE_MIN); }
-        if len_n == len_h { return Score::new(SCORE_MAX); }
-
-        let (m, _) = generate_score_matrices(needle, haystack);
-
-        let score = m.get(len_n - 1, len_h - 1).unwrap_or(SCORE_MIN);
-        Score::new(score)
-    }
-
-    /// Calculates match positions of needle's chars, in addition to the score
-    pub fn calculate_with_positions(needle: &str, haystack: &str) -> Score {
-        let len_n = needle.len();
-        let len_h = haystack.len();
-
-        if len_n == 0 { return Score::new(SCORE_MIN); }
-
-        if len_n == len_h {
-            let positions = (0..len_n).collect();
-            return Score::with_positions(SCORE_MAX, positions);
+        if len_n == 0 {
+            return Score { value: SCORE_MIN, positions: None };
         }
 
-        let (m, d) = generate_score_matrices(needle, haystack);
+        if len_n == len_h {
+            return Score { value: SCORE_MAX, positions: None };
+        }
+
+        let (m, _) = generate_score_matrices(needle, haystack, len_n, len_h);
 
         let score = m.get(len_n - 1, len_h - 1).unwrap_or(SCORE_MIN);
-        let positions = derive_match_positions(len_n, len_h, m, d);
+        Score { value: score, positions: None }
+    }
 
-        Score::with_positions(score, positions)
+    /// Creates a new Score from the provided needle and haystack, calculating
+    /// match positions.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let score = rff::fuzzy::Score::with_positions("abc", "abc");
+    /// assert_eq!(score.value, std::f64::INFINITY);
+    /// assert_eq!(score.positions, Some(vec![0, 1, 2]));
+    /// ```
+    pub fn with_positions(needle: &str, haystack: &str) -> Score {
+        let len_n = needle.chars().count();
+        let len_h = haystack.chars().count();
+
+        if len_n == 0 {
+            return Score { value: SCORE_MIN, positions: None };
+        }
+
+        if len_n == len_h {
+            return Score {
+                value: SCORE_MAX,
+                positions: Some((0..len_n).collect())
+            };
+        }
+
+        let (m, d) = generate_score_matrices(needle, haystack, len_n, len_h);
+
+        let score = m.get(len_n - 1, len_h - 1).unwrap_or(SCORE_MIN);
+        let positions = derive_match_positions(m, d, len_n, len_h);
+
+        Score { value: score, positions: Some(positions)}
     }
 }
 
 impl PartialOrd for Score {
+    #[inline]
     fn partial_cmp(&self, other: &Score) -> Option<Ordering> {
         self.value.partial_cmp(&other.value)
     }
 }
 
 impl PartialEq for Score {
+    #[inline]
     fn eq(&self, other: &Score) -> bool {
         self.value == other.value
     }
 }
 
 #[inline]
-fn generate_score_matrices(needle: &str, haystack: &str) -> (Mat, Mat) {
-    let len_n = needle.len();
-    let len_h = haystack.len();
-
+fn generate_score_matrices(needle: &str, haystack: &str, len_n: usize, len_h: usize) -> (Mat, Mat) {
     let bonus = compute_bonus(haystack);
 
     let mut d = Mat::new(len_n, len_h);
@@ -121,11 +121,11 @@ fn generate_score_matrices(needle: &str, haystack: &str) -> (Mat, Mat) {
 
                 prev_score = score.max(prev_score + gap_score);
 
-                d.set(i, j, score).unwrap();
-                m.set(i, j, prev_score).unwrap();
+                d.set(i, j, score);
+                m.set(i, j, prev_score);
             } else {
-                d.set(i, j, SCORE_MIN).unwrap();
-                m.set(i, j, prev_score + gap_score).unwrap();
+                d.set(i, j, SCORE_MIN);
+                m.set(i, j, prev_score + gap_score);
                 prev_score += gap_score;
             }
         }
@@ -137,7 +137,7 @@ fn generate_score_matrices(needle: &str, haystack: &str) -> (Mat, Mat) {
 /// Given the length of the input strings, and generated scoring matrices,
 /// generates a len_n vector of optimal match positions for each haystack char.
 #[inline]
-fn derive_match_positions(len_n: usize, len_h: usize, m: Mat, d: Mat) -> Vec<usize> {
+fn derive_match_positions(m: Mat, d: Mat, len_n: usize, len_h: usize) -> Vec<usize> {
     let mut positions = vec![0 as usize; len_n];
     let mut match_required = false;
 
@@ -172,24 +172,24 @@ mod tests {
     use super::*;
 
     fn score(needle: &str, haystack: &str) -> Score {
-        Score::calculate(needle, haystack)
+        Score::new(needle, haystack)
     }
 
     #[test]
     fn test_eq() {
-        let a = Score::new(1.0);
-        let b = Score::new(1.0);
+        let a = Score { value: 1.0, positions: None };
+        let b = Score { value: 1.0, positions: None };
         assert_eq!(a, b);
     }
 
     #[test]
     fn test_cmp() {
-        let a = Score::new(2.0);
-        let b = Score::new(1.0);
+        let a = Score { value: 2.0, positions: None };
+        let b = Score { value: 1.0, positions: None };
         assert!(a > b);
         assert!(b < a);
 
-        let b = Score::new(2.0);
+        let b = Score { value: 2.0, positions: None };
         assert!(a == b);
     }
 
@@ -225,7 +225,7 @@ mod tests {
     fn positions() {
         macro_rules! test_positions {
             ($needle:expr, $haystack:expr, $result:expr) => {
-                let score = Score::calculate_with_positions($needle, $haystack);
+                let score = Score::with_positions($needle, $haystack);
                 assert_eq!(score.positions, Some($result));
             }
         }

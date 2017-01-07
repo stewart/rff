@@ -1,8 +1,3 @@
-#[derive(Debug, PartialEq)]
-pub enum Error {
-    InvalidIndex
-}
-
 /// The Mat struct represents a matrix of scores as a 2D vector of f64s
 #[derive(Debug)]
 pub struct Mat {
@@ -25,15 +20,8 @@ impl Mat {
     }
 
     /// Sets the value at the given coordinates
-    pub fn set(&mut self, x: usize, y: usize, value: f64) -> Result<(), Error> {
-        let r = self.get_mut(x, y).ok_or(Error::InvalidIndex)?;
-        *r = value;
-        Ok(())
-    }
-
-    /// Gets a mutable reference to the value at the given coordinates
-    fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut f64> {
-        self.contents.get_mut(x * self.cols + y)
+    pub fn set(&mut self, x: usize, y: usize, value: f64) {
+        self.contents[x * self.cols + y] = value;
     }
 }
 
@@ -51,8 +39,14 @@ mod tests {
     #[test]
     fn set() {
         let mut mat = Mat::new(1, 1);
-        assert_eq!(mat.set(0, 0, 4.20), Ok(()));
-        assert_eq!(mat.set(1, 1, 4.20), Err(Error::InvalidIndex));
+        mat.set(0, 0, 4.20);
         assert_eq!(mat.get(0, 0), Some(4.20));
+    }
+
+    #[test]
+    #[should_panic]
+    fn set_oob() {
+        let mut mat = Mat::new(1, 1);
+        mat.set(1, 1, 4.20);
     }
 }
