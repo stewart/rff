@@ -8,5 +8,5 @@ use rff::fuzzy::bonus::compute_bonus;
 
 #[bench]
 fn bench_compute_bonus(b: &mut Bencher) {
-    b.iter(|| compute_bonus("App/Models/Order"))
+    b.iter(|| compute_bonus("app/models/order"))
 }
