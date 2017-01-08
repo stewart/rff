@@ -1,10 +1,10 @@
 mod mat;
+mod score;
 pub mod bonus;
-pub mod score;
 pub mod consts;
 
 use std::ascii::AsciiExt;
-pub use self::score::*;
+pub use self::score::Score;
 
 /// Searches for needle's chars in the haystack
 ///

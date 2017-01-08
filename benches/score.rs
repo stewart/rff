@@ -4,7 +4,7 @@ extern crate test;
 
 use test::Bencher;
 
-use rff::fuzzy::score::Score;
+use rff::fuzzy::Score;
 
 #[bench]
 fn score(b: &mut Bencher) {

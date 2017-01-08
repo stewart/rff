@@ -1,4 +1,4 @@
-// A port of selecta's scoring algorithm parsing.
+// A port of selecta's scoring algorithm.
 // selecta (c) 2014 John Hawthorn
 // Licensed under the MIT license
 
@@ -8,6 +8,8 @@ use super::mat::Mat;
 use super::bonus::compute_bonus;
 use super::consts::*;
 
+/// A score derived from comparing needle and haystack strings, with optional
+/// match position information.
 #[derive(Debug)]
 pub struct Score {
     /// The computed score value
@@ -51,7 +53,8 @@ impl Score {
     /// # Examples
     ///
     /// ```
-    /// let score = rff::fuzzy::Score::with_positions("abc", "abc");
+    /// use rff::fuzzy::Score;
+    /// let score = Score::with_positions("abc", "abc");
     /// assert_eq!(score.value, std::f64::INFINITY);
     /// assert_eq!(score.positions, Some(vec![0, 1, 2]));
     /// ```
