@@ -10,7 +10,7 @@ use std::io::{self, BufRead, Write, BufWriter};
 use std::process;
 use rayon::prelude::*;
 use getopts::{Options, Fail};
-use rff::choice::Choice;
+use rff::Choice;
 use interface::{Interface, Error};
 
 fn main() {

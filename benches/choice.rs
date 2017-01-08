@@ -3,8 +3,7 @@ extern crate rff;
 extern crate test;
 
 use test::Bencher;
-
-use rff::choice::Choice;
+use rff::Choice;
 
 #[bench]
 fn create_choice(b: &mut Bencher) {

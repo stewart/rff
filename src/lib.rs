@@ -1,5 +1,7 @@
+mod choice;
 pub mod fuzzy;
-pub mod choice;
+
+pub use choice::Choice;
 
 #[cfg(test)]
 mod tests {

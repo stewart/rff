@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use fuzzy::{matches, Score};
 
-/// A Choice wraps a String and it's calculated Score
+/// A Choice wraps a str and its derived Score.
 #[derive(Debug)]
 pub struct Choice<'a>(&'a str, Score);
 
@@ -11,8 +11,7 @@ impl<'a> Choice<'a> {
     /// # Examples
     ///
     /// ```
-    /// use rff::choice::Choice;
-    /// assert!(Choice::new("amo", "app/models/order").is_some());
+    /// assert!(rff::Choice::new("amo", "app/models/order").is_some());
     /// ```
     pub fn new(needle: &str, haystack: &'a str) -> Option<Choice<'a>> {
         if matches(&needle, &haystack) {

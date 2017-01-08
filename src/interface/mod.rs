@@ -5,7 +5,7 @@ use std::io::{self, Write, BufWriter};
 use self::terminal::{Terminal, Event, Key};
 use self::ansi::{clear, color, cursor, style};
 use rayon::prelude::*;
-use rff::choice::Choice;
+use rff::Choice;
 
 #[derive(Debug)]
 pub enum Error {
