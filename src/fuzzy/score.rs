@@ -103,11 +103,11 @@ fn generate_score_matrices(needle: &str, haystack: &str, len_n: usize, len_h: us
     let mut d = Mat::new(len_n, len_h);
     let mut m = Mat::new(len_n, len_h);
 
-    for (i, n) in needle.char_indices() {
+    for (i, n) in needle.chars().enumerate() {
         let mut prev_score = SCORE_MIN;
         let gap_score = if i == len_n - 1 { SCORE_GAP_TRAILING } else { SCORE_GAP_INNER };
 
-        for (j, h) in haystack.char_indices() {
+        for (j, h) in haystack.chars().enumerate() {
             if eq(n, h) {
                 let mut score = SCORE_MIN;
 
@@ -222,6 +222,11 @@ mod tests {
         // Prefer shorter scorees
         assert!(score("abc", "    a b c ") > score("abc", " a  b  c "));
         assert!(score("abc", " a b c    ") > score("abc", " a  b  c "));
+    }
+
+    #[test]
+    fn score_utf8() {
+        assert_eq!(score("ß", "öäßéè").value, -0.02);
     }
 
     #[test]
