@@ -50,8 +50,7 @@ Interestingly, the macOS implementation of `tolower(3)` appears to be not nearly
 
 ### TODO
 
-- [x] highlight match positions in interactive mode
-- [ ] explore using `strpbrk` on Linux for performance
+- [ ] speed up scoring algorithm
 
 [fzy]: https://github.com/jhawthorn/fzy
 [fzy-algo]: https://github.com/jhawthorn/fzy/blob/master/ALGORITHM.md
