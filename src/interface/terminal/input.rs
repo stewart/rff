@@ -22,6 +22,12 @@ impl<R: Read> Iterator for Events<R> {
     fn next(&mut self) -> Option<Result<Event>> {
         let mut source = &mut self.source;
 
+        if let Some(c) = self.leftover {
+            // we have a leftover byte, use it
+            self.leftover = None;
+            return Some(parse_event(c, &mut source.bytes()));
+        }
+
         let mut buf = [0u8; 2];
 
         let result = match source.read(&mut buf) {
