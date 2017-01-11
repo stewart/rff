@@ -15,7 +15,7 @@ If you do wish to use it, `rff` is a drop-in replacement for other fuzzy finders
 
 ### UTF-8 Support
 
-Generally, the most performance critical component of a fuzzy finder algorithm is matching - determining which possible choices are eligible for scoring.
+Generally, one of the most performance critical component of a fuzzy finder algorithms is matching - determining which possible choices are eligible for scoring.
 
 `fzy` approaches this problem by using [`strpbrk(3)`][strpbrk] to [case-insensitively compare strings][fzy-match]. The glibc implementation of this is extremely fast, at the expense of UTF-8 support.
 
@@ -33,20 +33,20 @@ This benchmark was run on Arch Linux:
     $ find ~/dev/linux -type f > files
 
     $ cat files | time fzy -e drivers --benchmark
-    fzy -e drivers --benchmark  1.36s user 0.02s system 117% cpu 1.178 total
+    fzy -e drivers --benchmark  1.52s user 0.01s system 202% cpu 0.755 total
 
     $ cat files | time rff -s drivers --benchmark
-    rff -s drivers --benchmark  6.16s user 0.12s system 350% cpu 1.793 total
+    rff -s drivers --benchmark  5.75s user 0.09s system 347% cpu 1.685 total
 
-Interestingly, the macOS implementation of `strpbrk(3)` appears to be not nearly as well optimized, resulting in much slower matching for `fzy`:
+Interestingly, the macOS implementation of `tolower(3)` appears to be not nearly as well optimized, resulting in much slower scoring for `fzy`:
 
     $ find ~/dev/linux -type f > files
 
     $ cat files | time fzy -e drivers --benchmark
-    fzy -e drivers --benchmark  13.17s user 0.05s system 169% cpu 7.792 total
+    fzy -e "drivers" --benchmark  18.50s user 0.06s system 364% cpu 5.090 total
 
     $ cat files | time rff -s drivers --benchmark
-    rff -s drivers --benchmark  11.73s user 0.06s system 358% cpu 3.290 total
+    rff -s "drivers" --benchmark  10.56s user 0.09s system 338% cpu 3.146 total
 
 ### TODO
 
