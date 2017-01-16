@@ -30,21 +30,7 @@ impl Score {
     /// assert_eq!(score.value, std::f64::INFINITY);
     /// ```
     pub fn new(needle: &str, haystack: &str) -> Score {
-        let len_n = needle.chars().count();
-        let len_h = haystack.chars().count();
-
-        if len_n == 0 {
-            return Score { value: SCORE_MIN, positions: None };
-        }
-
-        if len_n == len_h {
-            return Score { value: SCORE_MAX, positions: None };
-        }
-
-        let (m, _) = generate_score_matrices(needle, haystack, len_n, len_h);
-
-        let score = m.get(len_n - 1, len_h - 1).unwrap_or(SCORE_MIN);
-        Score { value: score, positions: None }
+        Scorer::new(needle, haystack).calculate().as_score()
     }
 
     /// Creates a new Score from the provided needle and haystack, calculating
@@ -59,26 +45,7 @@ impl Score {
     /// assert_eq!(score.positions, Some(vec![0, 1, 2]));
     /// ```
     pub fn with_positions(needle: &str, haystack: &str) -> Score {
-        let len_n = needle.chars().count();
-        let len_h = haystack.chars().count();
-
-        if len_n == 0 {
-            return Score { value: SCORE_MIN, positions: None };
-        }
-
-        if len_n == len_h {
-            return Score {
-                value: SCORE_MAX,
-                positions: Some((0..len_n).collect())
-            };
-        }
-
-        let (m, d) = generate_score_matrices(needle, haystack, len_n, len_h);
-
-        let score = m.get(len_n - 1, len_h - 1).unwrap_or(SCORE_MIN);
-        let positions = derive_match_positions(m, d, len_n, len_h);
-
-        Score { value: score, positions: Some(positions)}
+        Scorer::new(needle, haystack).calculate().with_positions().as_score()
     }
 }
 
@@ -96,80 +63,131 @@ impl PartialEq for Score {
     }
 }
 
-#[inline]
-fn generate_score_matrices(needle: &str, haystack: &str, len_n: usize, len_h: usize) -> (Mat, Mat) {
-    let bonus = compute_bonus(haystack);
+struct Scorer<'a> {
+    needle: &'a str,
+    haystack: &'a str,
+    len_n: usize,
+    len_h: usize,
+    d: Mat,
+    m: Mat,
+    positions: Option<Vec<usize>>
+}
 
-    let mut d = Mat::new(len_n, len_h);
-    let mut m = Mat::new(len_n, len_h);
+impl<'a> Scorer<'a> {
+    #[inline]
+    fn new(needle: &'a str, haystack: &'a str) -> Scorer<'a> {
+        let len_n = needle.chars().count();
+        let len_h = haystack.chars().count();
 
-    for (i, n) in needle.chars().enumerate() {
-        let mut prev_score = SCORE_MIN;
-        let gap_score = if i == len_n - 1 { SCORE_GAP_TRAILING } else { SCORE_GAP_INNER };
+        let m = Mat::new(len_n, len_h);
+        let d = Mat::new(len_n, len_h);
 
-        for (j, h) in haystack.chars().enumerate() {
-            if eq(n, h) {
-                let mut score = SCORE_MIN;
-
-                let bonus_score = bonus[j];
-
-                if i == 0 {
-                    score = ((j as f64) * SCORE_GAP_LEADING) + bonus_score;
-                } else if j > 0 {
-                    let m = m.get(i - 1, j - 1).unwrap();
-                    let d = d.get(i - 1, j - 1).unwrap();
-
-                    score = (m + bonus_score).max(d + SCORE_MATCH_CONSECUTIVE);
-                }
-
-                prev_score = score.max(prev_score + gap_score);
-
-                d.set(i, j, score);
-                m.set(i, j, prev_score);
-            } else {
-                d.set(i, j, SCORE_MIN);
-                m.set(i, j, prev_score + gap_score);
-                prev_score += gap_score;
-            }
+        Scorer {
+            needle: needle,
+            haystack: haystack,
+            len_n: len_n,
+            len_h: len_h,
+            m: m,
+            d: d,
+            positions: None
         }
     }
 
-    (m, d)
-}
-
-/// Given the length of the input strings, and generated scoring matrices,
-/// generates a len_n vector of optimal match positions for each haystack char.
-#[inline]
-fn derive_match_positions(m: Mat, d: Mat, len_n: usize, len_h: usize) -> Vec<usize> {
-    let mut positions = vec![0 as usize; len_n];
-    let mut match_required = false;
-
-    let mut j = len_h - 1;
-
-    for i in (0..len_n).rev() {
-        while j > (0 as usize) {
-            let last = if i > 0 && j > 0 { d.get(i - 1, j - 1).unwrap() } else { 0.0 };
-
-            let d = d.get(i, j).unwrap();
-            let m = m.get(i, j).unwrap();
-
-            if d != SCORE_MIN && (match_required || d == m) {
-                if i > 0 && j > 0 && m == last + SCORE_MATCH_CONSECUTIVE {
-                    match_required = true;
-                }
-
-                positions[i] = j;
-
-                break;
-            }
-
-            j -= 1
+    #[inline]
+    fn calculate(mut self) -> Scorer<'a> {
+        if self.len_n == 0 || self.len_n == self.len_h {
+            return self
         }
+
+        let bonus = compute_bonus(self.haystack);
+
+        for (i, n) in self.needle.chars().enumerate() {
+            let mut prev_score = SCORE_MIN;
+            let gap_score = if i == self.len_n - 1 { SCORE_GAP_TRAILING } else { SCORE_GAP_INNER };
+
+            for (j, h) in self.haystack.chars().enumerate() {
+                if eq(n, h) {
+                    let mut score = SCORE_MIN;
+
+                    let bonus_score = bonus[j];
+
+                    if i == 0 {
+                        score = ((j as f64) * SCORE_GAP_LEADING) + bonus_score;
+                    } else if j > 0 {
+                        let m = self.m.get(i - 1, j - 1).unwrap();
+                        let d = self.d.get(i - 1, j - 1).unwrap();
+
+                        score = (m + bonus_score).max(d + SCORE_MATCH_CONSECUTIVE);
+                    }
+
+                    prev_score = score.max(prev_score + gap_score);
+
+                    self.d.set(i, j, score);
+                    self.m.set(i, j, prev_score);
+                } else {
+                    self.d.set(i, j, SCORE_MIN);
+                    self.m.set(i, j, prev_score + gap_score);
+                    prev_score += gap_score;
+                }
+            }
+        }
+
+        self
     }
 
-    positions
-}
+    #[inline]
+    fn with_positions(mut self) -> Scorer<'a> {
+        if self.len_n == 0 {
+            return self;
+        } else if self.len_n == self.len_h {
+            self.positions = Some((0..self.len_n).collect());
+            return self;
+        }
 
+        let mut positions = vec![0 as usize; self.len_n];
+        let mut match_required = false;
+
+        let mut j = self.len_h - 1;
+
+        for i in (0..self.len_n).rev() {
+            while j > (0 as usize) {
+                let last = if i > 0 && j > 0 { self.d.get(i - 1, j - 1).unwrap() } else { 0.0 };
+
+                let d = self.d.get(i, j).unwrap();
+                let m = self.m.get(i, j).unwrap();
+
+                if d != SCORE_MIN && (match_required || d == m) {
+                    if i > 0 && j > 0 && m == last + SCORE_MATCH_CONSECUTIVE {
+                        match_required = true;
+                    }
+
+                    positions[i] = j;
+
+                    break;
+                }
+
+                j -= 1
+            }
+        }
+
+        self.positions = Some(positions);
+        self
+    }
+
+    #[inline]
+    fn as_score(self) -> Score {
+        let value = match self.len_n {
+            0 => SCORE_MIN,
+            _ if self.len_n == self.len_h => SCORE_MAX,
+            _ => self.m.get(self.len_n - 1, self.len_h - 1).unwrap_or(SCORE_MIN)
+        };
+
+        Score {
+            value: value,
+            positions: self.positions,
+        }
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
