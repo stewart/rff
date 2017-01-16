@@ -42,11 +42,11 @@ Interestingly, the macOS implementation of `tolower(3)` appears to be not nearly
 
     $ find ~/dev/linux -type f > files
 
-    $ cat files | time fzy -e drivers --benchmark
-    fzy -e "drivers" --benchmark  18.50s user 0.06s system 364% cpu 5.090 total
+    $ time fzy -e drivers --benchmark < files
+    fzy -e drivers --benchmark < files  18.42s user 0.06s system 356% cpu 5.192 total
 
-    $ cat files | time rff -s drivers --benchmark
-    rff -s "drivers" --benchmark  10.56s user 0.09s system 338% cpu 3.146 total
+    $ time rff -s drivers --benchmark < files
+    rff -s drivers --benchmark < files  9.40s user 0.12s system 332% cpu 2.860 total
 
 ### TODO
 
