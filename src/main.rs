@@ -60,7 +60,7 @@ fn run() -> i32 {
         for _ in 0..100 {
             choices.
                 par_iter().
-                filter_map(|choice| Choice::new(&search, &choice)).
+                filter_map(|choice| Choice::new(&search, choice)).
                 collect::<Vec<Choice>>().
                 sort_by(|a, b| b.partial_cmp(a).unwrap());
         }
@@ -69,7 +69,7 @@ fn run() -> i32 {
 
         let mut choices = choices.
             par_iter().
-            filter_map(|choice| Choice::new(&search, &choice)).
+            filter_map(|choice| Choice::new(&search, choice)).
             collect::<Vec<Choice>>();
 
         choices.sort_by(|a, b| b.partial_cmp(a).unwrap());
@@ -85,7 +85,7 @@ fn run() -> i32 {
 
         let opts = interface::Options {
             choices: choices,
-            initial: matches.opt_str("q").unwrap_or(String::new())
+            initial: matches.opt_str("q").unwrap_or_default()
         };
 
         let mut interface = Interface::from_opts(opts);
