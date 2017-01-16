@@ -21,17 +21,15 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
 
     let mut hchars = haystack.chars();
 
-    'outer: for n in needle.chars() {
+    needle.chars().all(|n| {
         while let Some(h) = hchars.next() {
             if eq(n, h) {
-                continue 'outer
+                return true
             }
         }
 
-        return false
-    }
-
-    true
+        false
+    })
 }
 
 /// Compares two characters case-insensitively
