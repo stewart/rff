@@ -32,11 +32,11 @@ This benchmark was run on Arch Linux:
 
     $ find ~/dev/linux -type f > files
 
-    $ cat files | time fzy -e drivers --benchmark
+    $ time fzy -e drivers --benchmark < files
     fzy -e drivers --benchmark  1.52s user 0.01s system 202% cpu 0.755 total
 
-    $ cat files | time rff -s drivers --benchmark
-    rff -s drivers --benchmark  5.75s user 0.09s system 347% cpu 1.685 total
+    $ time rff -s drivers --benchmark < files
+    rff -s drivers --benchmark < files  5.62s user 0.13s system 352% cpu 1.630 total
 
 Interestingly, the macOS implementation of `tolower(3)` appears to be not nearly as well optimized, resulting in much slower scoring for `fzy`:
 
