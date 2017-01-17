@@ -68,8 +68,8 @@ struct Scorer<'a> {
     haystack: &'a str,
     len_n: usize,
     len_h: usize,
-    d: Mat,
-    m: Mat,
+    d: Option<Mat>,
+    m: Option<Mat>,
     score: f64,
     positions: Option<Vec<usize>>
 }
@@ -80,16 +80,13 @@ impl<'a> Scorer<'a> {
         let len_n = needle.chars().count();
         let len_h = haystack.chars().count();
 
-        let m = Mat::new(len_n, len_h);
-        let d = Mat::new(len_n, len_h);
-
         Scorer {
             needle: needle,
             haystack: haystack,
             len_n: len_n,
             len_h: len_h,
-            m: m,
-            d: d,
+            m: None,
+            d: None,
             score: 0.0,
             positions: None
         }
@@ -115,6 +112,9 @@ impl<'a> Scorer<'a> {
 
         let bonus = compute_bonus(self.haystack);
 
+        let mut m = Mat::new(self.len_n, self.len_h);
+        let mut d = Mat::new(self.len_n, self.len_h);
+
         for (i, n) in self.needle.chars().enumerate() {
             let mut prev_score = SCORE_MIN;
             let gap_score = if i == self.len_n - 1 { SCORE_GAP_TRAILING } else { SCORE_GAP_INNER };
@@ -128,60 +128,70 @@ impl<'a> Scorer<'a> {
                     if i == 0 {
                         score = ((j as f64) * SCORE_GAP_LEADING) + bonus_score;
                     } else if j > 0 {
-                        let m = self.m.get(i - 1, j - 1).unwrap();
-                        let d = self.d.get(i - 1, j - 1).unwrap();
+                        let m = m.get(i - 1, j - 1).unwrap();
+                        let d = d.get(i - 1, j - 1).unwrap();
 
                         score = (m + bonus_score).max(d + SCORE_MATCH_CONSECUTIVE);
                     }
 
                     prev_score = score.max(prev_score + gap_score);
 
-                    self.d.set(i, j, score);
-                    self.m.set(i, j, prev_score);
+                    d.set(i, j, score);
+                    m.set(i, j, prev_score);
                 } else {
-                    self.d.set(i, j, SCORE_MIN);
-                    self.m.set(i, j, prev_score + gap_score);
+                    d.set(i, j, SCORE_MIN);
+                    m.set(i, j, prev_score + gap_score);
                     prev_score += gap_score;
                 }
             }
         }
 
-        self.score = self.m.get(self.len_n - 1, self.len_h - 1).unwrap_or(SCORE_MIN);
+        self.score = m.get(self.len_n - 1, self.len_h - 1).unwrap_or(SCORE_MIN);
+
+        self.m = Some(m);
+        self.d = Some(d);
+
         self
     }
 
     #[inline]
     fn with_positions(mut self) -> Scorer<'a> {
-        if self.len_n == 0 {
-            return self;
-        } else if self.len_n == self.len_h {
+        if self.len_n == self.len_h {
             self.positions = Some((0..self.len_n).collect());
+        }
+
+        if self.len_n == 0 || self.len_n == self.len_h || self.len_h > 1024 {
             return self;
         }
 
         let mut positions = vec![0 as usize; self.len_n];
         let mut match_required = false;
 
-        let mut j = self.len_h - 1;
+        {
+            let m = self.m.as_ref().unwrap();
+            let d = self.d.as_ref().unwrap();
 
-        for i in (0..self.len_n).rev() {
-            while j > (0 as usize) {
-                let last = if i > 0 && j > 0 { self.d.get(i - 1, j - 1).unwrap() } else { 0.0 };
+            let mut j = self.len_h - 1;
 
-                let d = self.d.get(i, j).unwrap();
-                let m = self.m.get(i, j).unwrap();
+            for i in (0..self.len_n).rev() {
+                while j > (0 as usize) {
+                    let last = if i > 0 && j > 0 { d.get(i - 1, j - 1).unwrap() } else { 0.0 };
 
-                if d != SCORE_MIN && (match_required || d == m) {
-                    if i > 0 && j > 0 && m == last + SCORE_MATCH_CONSECUTIVE {
-                        match_required = true;
+                    let d = d.get(i, j).unwrap();
+                    let m = m.get(i, j).unwrap();
+
+                    if d != SCORE_MIN && (match_required || d == m) {
+                        if i > 0 && j > 0 && m == last + SCORE_MATCH_CONSECUTIVE {
+                            match_required = true;
+                        }
+
+                        positions[i] = j;
+
+                        break;
                     }
 
-                    positions[i] = j;
-
-                    break;
+                    j -= 1
                 }
-
-                j -= 1
             }
         }
 

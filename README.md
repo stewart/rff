@@ -36,7 +36,7 @@ This benchmark was run on Arch Linux:
     fzy -e drivers --benchmark  1.52s user 0.01s system 202% cpu 0.755 total
 
     $ time rff -s drivers --benchmark < files
-    rff -s drivers --benchmark < files  5.62s user 0.13s system 352% cpu 1.630 total
+    rff -s drivers --benchmark < files  4.99s user 0.07s system 356% cpu 1.421 total
 
 Interestingly, the macOS implementation of `tolower(3)` appears to be not nearly as well optimized, resulting in much slower scoring for `fzy`:
 
@@ -46,7 +46,7 @@ Interestingly, the macOS implementation of `tolower(3)` appears to be not nearly
     fzy -e drivers --benchmark < files  18.42s user 0.06s system 356% cpu 5.192 total
 
     $ time rff -s drivers --benchmark < files
-    rff -s drivers --benchmark < files  9.40s user 0.12s system 332% cpu 2.860 total
+    rff -s drivers --benchmark < files  8.93s user 0.08s system 349% cpu 2.578 total
 
 ### TODO
 
