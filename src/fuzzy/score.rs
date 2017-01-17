@@ -70,6 +70,7 @@ struct Scorer<'a> {
     len_h: usize,
     d: Mat,
     m: Mat,
+    score: f64,
     positions: Option<Vec<usize>>
 }
 
@@ -89,14 +90,27 @@ impl<'a> Scorer<'a> {
             len_h: len_h,
             m: m,
             d: d,
+            score: 0.0,
             positions: None
         }
     }
 
     #[inline]
     fn calculate(mut self) -> Scorer<'a> {
-        if self.len_n == 0 || self.len_n == self.len_h {
-            return self
+        if self.len_n == 0 {
+            self.score = SCORE_MIN;
+            return self;
+        }
+
+        if self.len_n == self.len_h {
+            self.score = SCORE_MAX;
+            return self;
+        }
+
+        if self.len_h > 1024 {
+            // unreasonably large candidate
+            self.score = SCORE_MIN;
+            return self;
         }
 
         let bonus = compute_bonus(self.haystack);
@@ -132,6 +146,7 @@ impl<'a> Scorer<'a> {
             }
         }
 
+        self.score = self.m.get(self.len_n - 1, self.len_h - 1).unwrap_or(SCORE_MIN);
         self
     }
 
@@ -176,14 +191,8 @@ impl<'a> Scorer<'a> {
 
     #[inline]
     fn as_score(self) -> Score {
-        let value = match self.len_n {
-            0 => SCORE_MIN,
-            _ if self.len_n == self.len_h => SCORE_MAX,
-            _ => self.m.get(self.len_n - 1, self.len_h - 1).unwrap_or(SCORE_MIN)
-        };
-
         Score {
-            value: value,
+            value: self.score,
             positions: self.positions,
         }
     }
