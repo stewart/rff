@@ -142,9 +142,10 @@ impl<'a> Scorer<'a> {
                     d.set(i, j, score);
                     m.set(i, j, prev_score);
                 } else {
-                    d.set(i, j, SCORE_MIN);
-                    m.set(i, j, prev_score + gap_score);
                     prev_score += gap_score;
+
+                    d.set(i, j, SCORE_MIN);
+                    m.set(i, j, prev_score);
                 }
             }
         }
