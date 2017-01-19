@@ -121,18 +121,21 @@ impl<'a> Scorer<'a> {
 
             for (j, h) in self.haystack.chars().enumerate() {
                 if eq(n, h) {
-                    let mut score = SCORE_MIN;
-
                     let bonus_score = bonus[j];
 
-                    if i == 0 {
-                        score = ((j as f64) * SCORE_GAP_LEADING) + bonus_score;
-                    } else if j > 0 {
-                        let m = m.get(i - 1, j - 1).unwrap();
-                        let d = d.get(i - 1, j - 1).unwrap();
+                    let score = match i {
+                        0 => ((j as f64) * SCORE_GAP_LEADING) + bonus_score,
+                        _ if j > 0 => {
+                            let m = m.get(i - 1, j - 1).unwrap();
+                            let d = d.get(i - 1, j - 1).unwrap();
 
-                        score = (m + bonus_score).max(d + SCORE_MATCH_CONSECUTIVE);
-                    }
+                            let m = m + bonus_score;
+                            let d = d + SCORE_MATCH_CONSECUTIVE;
+
+                            (m).max(d)
+                        },
+                        _ => SCORE_MIN
+                    };
 
                     prev_score = score.max(prev_score + gap_score);
 
