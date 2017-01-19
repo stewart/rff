@@ -126,6 +126,7 @@ impl Drop for Terminal {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::Write;
 
     #[test]
     fn terminal() {

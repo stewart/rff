@@ -13,7 +13,7 @@ pub fn compute_bonus(haystack: &str) -> Vec<f64> {
     })
 }
 
-fn for_char(prev: char, current: char) -> f64 {
+pub fn for_char(prev: char, current: char) -> f64 {
     match current {
         'a' ... 'z' | '0' ... '9' => bonus_for_prev(prev),
         'A' ... 'Z' => {
@@ -38,6 +38,7 @@ fn bonus_for_prev(ch: char) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use fuzzy::consts::*;
 
     #[test]
     fn test_compute_bonus() {
