@@ -78,5 +78,6 @@ mod tests {
         assert!(matches("山", "山"));
         assert!(matches("café", "CAFÉ"));
         assert!(matches("weiß", "WEIẞ"));
+        assert!(matches("хди́ь", "ХОДИ́ТЬ"));
     }
 }
