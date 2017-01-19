@@ -89,7 +89,7 @@ impl<'a> Interface<'a> {
 
                     Key::Char(ch) => {
                         self.search.push(ch);
-                        self.filter_choices();
+                        self.filter_existing();
                         self.render()?;
                     },
 
@@ -125,6 +125,17 @@ impl<'a> Interface<'a> {
         self.matches = matches;
     }
 
+    fn filter_existing(&mut self) {
+        let mut matches = self.matches.
+            par_iter().
+            filter_map(|m| Choice::with_positions(&self.search, m.0)).
+            collect::<Vec<_>>();
+
+        matches.sort_by(|a, b| b.partial_cmp(a).unwrap());
+
+        self.matches = matches;
+    }
+
     fn prompt(&self) -> String {
         let count = self.matches.len();
         format!("{:width$} > {}", count, self.search, width = self.choices_width)
@@ -144,7 +155,7 @@ impl<'a> Interface<'a> {
 
         for (i, choice) in matches.enumerate() {
             let selected = i == self.selected;
-            let chars = choice.text().chars().take(self.width);
+            let chars = choice.0.chars().take(self.width);
 
             write!(term, "\r\n")?;
 
@@ -196,7 +207,7 @@ impl<'a> Interface<'a> {
 
     fn result(&mut self) -> &str {
         self.matches.iter().
-            map(|c| c.text()).
+            map(|choice| choice.0).
             nth(self.selected).
             unwrap_or(&self.search)
     }

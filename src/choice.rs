@@ -3,7 +3,7 @@ use fuzzy::{matches, Score};
 
 /// A Choice wraps a str and its derived Score.
 #[derive(Debug)]
-pub struct Choice<'a>(&'a str, Score);
+pub struct Choice<'a>(pub &'a str, Score);
 
 impl<'a> Choice<'a> {
     /// Creates a new Choice if the needle matches the haystack.
@@ -30,11 +30,6 @@ impl<'a> Choice<'a> {
         } else {
             None
         }
-    }
-
-    /// Gets the Choice's text as a &str.
-    pub fn text(&self) -> &str {
-        &self.0
     }
 
     /// Gets a ref to the Choice's positions.

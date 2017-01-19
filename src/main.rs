@@ -78,7 +78,7 @@ fn run() -> i32 {
         let mut stdout = BufWriter::new(stdout.lock());
 
         for choice in choices {
-            writeln!(stdout, "{}", choice.text()).unwrap();
+            writeln!(stdout, "{}", choice.0).unwrap();
         }
     } else {
         let choices = choices.iter().map(|x| &x[..]).collect::<Vec<&str>>();
