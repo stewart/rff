@@ -1,27 +1,22 @@
 # rff
 
-`rff` is a fast, simple fuzzy text selector for the terminal. It uses a similar
-scoring algorithm to [`fzy`][fzy].
+`rff` is a fast, simple fuzzy text selector for the terminal, with UTF-8 support. It uses a similar scoring algorithm to [`fzy`][fzy-algo].
+
+It currently has a very similar feature set to `fzy`, although this may change in the future.
 
 ### Installation
 
+At the moment, installation is best done through Cargo:
+
     $ cargo install --git https://github.com/stewart/rff
+
+If you have a Rust toolchain set up locally, you can also build from source with `cargo build --release`.
 
 ### Usage
 
-Probably don't - this is still pretty new, and may have edge cases I've not run into yet.
+`rff` is a drop-in replacement for other fuzzy finders such as [`fzy`][fzy] or [`selecta`][selecta].
 
-If you do wish to use it, `rff` is a drop-in replacement for other fuzzy finders such as [`fzy`][fzy] or [`selecta`][selecta].
-
-### UTF-8 Support
-
-Generally, one of the most performance critical component of a fuzzy finder algorithms is matching - determining which possible choices are eligible for scoring.
-
-`fzy` approaches this problem by using [`strpbrk(3)`][strpbrk] to [case-insensitively compare strings][fzy-match]. The glibc implementation of this is extremely fast, at the expense of UTF-8 support.
-
-`rff` uses Rust's built-in `std::ascii::AsciiExt` module to perform [ASCII character comparison][rff-match] for speed, falling back to a UTF-8 friendly approach if all other options have been exhausted.
-
-For more information on the full scoring algorithm used, please see `fzy`'s [`ALGORITHM.md`][fzy-algo].
+For some examples of how these sorts of tools can be used, see [`selecta`'s examples][selecta-examples].
 
 ### Benchmarks
 
@@ -48,13 +43,7 @@ Interestingly, the macOS implementation of `tolower(3)` appears to be not nearly
     $ time rff -s drivers --benchmark < files
     rff -s drivers --benchmark < files  8.93s user 0.08s system 349% cpu 2.578 total
 
-### TODO
-
-- [ ] speed up scoring algorithm
-
 [fzy]: https://github.com/jhawthorn/fzy
 [fzy-algo]: https://github.com/jhawthorn/fzy/blob/master/ALGORITHM.md
-[fzy-match]: https://github.com/jhawthorn/fzy/blob/9d16ab4997ce6eb211ff3fdf06275d3f6bf5ebdc/src/match.c#L13-L28
-[rff-match]: https://github.com/stewart/rff/blob/8a35ca735e2e7a09277e3718fcc34472943c40d8/src/fuzzy/mod.rs#L37-L43
 [selecta]: https://github.com/garybernhardt/selecta
-[strpbrk]: https://linux.die.net/man/3/strpbrk
+[selecta-examples]: https://github.com/garybernhardt/selecta/blob/master/EXAMPLES.md
