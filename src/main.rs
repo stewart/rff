@@ -104,14 +104,8 @@ fn run() -> i32 {
 }
 
 fn get_choices() -> Vec<String> {
-    let mut lines = vec![];
-
     let stdin = io::stdin();
-
-    for line in stdin.lock().lines() {
-        lines.push(line.unwrap());
-    }
-
+    let lines = stdin.lock().lines().map(Result::unwrap).collect();
     lines
 }
 
