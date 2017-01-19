@@ -62,7 +62,7 @@ fn run() -> i32 {
                 par_iter().
                 filter_map(|choice| Choice::new(&search, choice)).
                 collect::<Vec<Choice>>().
-                sort_by(|a, b| b.partial_cmp(a).unwrap());
+                sort_by(|a, b| a.partial_cmp(b).unwrap().reverse());
         }
     } else if matches.opt_present("s") {
         let search = matches.opt_str("s").unwrap();
@@ -72,7 +72,7 @@ fn run() -> i32 {
             filter_map(|choice| Choice::new(&search, choice)).
             collect::<Vec<Choice>>();
 
-        choices.sort_by(|a, b| b.partial_cmp(a).unwrap());
+        choices.sort_by(|a, b| a.partial_cmp(b).unwrap().reverse());
 
         let stdout = io::stdout();
         let mut stdout = BufWriter::new(stdout.lock());

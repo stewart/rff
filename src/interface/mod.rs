@@ -120,7 +120,7 @@ impl<'a> Interface<'a> {
             filter_map(|choice| Choice::with_positions(&self.search, choice)).
             collect::<Vec<_>>();
 
-        matches.sort_by(|a, b| b.partial_cmp(a).unwrap());
+        matches.sort_by(|a, b| a.partial_cmp(b).unwrap().reverse());
 
         self.matches = matches;
     }
@@ -131,7 +131,7 @@ impl<'a> Interface<'a> {
             filter_map(|m| Choice::with_positions(&self.search, m.0)).
             collect::<Vec<_>>();
 
-        matches.sort_by(|a, b| b.partial_cmp(a).unwrap());
+        matches.sort_by(|a, b| a.partial_cmp(b).unwrap().reverse());
 
         self.matches = matches;
     }
