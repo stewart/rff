@@ -16,7 +16,7 @@ impl Mat {
 
     /// Gets the value at the given coordinates
     pub fn get(&self, x: usize, y: usize) -> Option<f64> {
-        self.contents.get(x * self.cols + y).map(|y| *y)
+        self.contents.get(x * self.cols + y).cloned()
     }
 
     /// Sets the value at the given coordinates

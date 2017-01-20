@@ -14,8 +14,8 @@ impl<'a> Choice<'a> {
     /// assert!(rff::Choice::new("amo", "app/models/order").is_some());
     /// ```
     pub fn new(needle: &str, haystack: &'a str) -> Option<Choice<'a>> {
-        if matches(&needle, &haystack) {
-            let score = Score::new(&needle, &haystack);
+        if matches(needle, haystack) {
+            let score = Score::new(needle, haystack);
             Some(Choice(haystack, score))
         } else {
             None
@@ -24,8 +24,8 @@ impl<'a> Choice<'a> {
 
     /// Creates a new Choice with derived match positions
     pub fn with_positions(needle: &str, haystack: &'a str) -> Option<Choice<'a>> {
-        if matches(&needle, &haystack) {
-            let score = Score::with_positions(&needle, &haystack);
+        if matches(needle, haystack) {
+            let score = Score::with_positions(needle, haystack);
             Some(Choice(haystack, score))
         } else {
             None

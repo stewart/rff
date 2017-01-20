@@ -30,7 +30,7 @@ impl Score {
     /// assert_eq!(score.value, std::f64::INFINITY);
     /// ```
     pub fn new(needle: &str, haystack: &str) -> Score {
-        ScoreBuilder::new(needle, haystack).calculate().as_score()
+        ScoreBuilder::new(needle, haystack).calculate().build()
     }
 
     /// Creates a new Score from the provided needle and haystack, calculating
@@ -45,7 +45,7 @@ impl Score {
     /// assert_eq!(score.positions, Some(vec![0, 1, 2]));
     /// ```
     pub fn with_positions(needle: &str, haystack: &str) -> Score {
-        ScoreBuilder::new(needle, haystack).calculate().with_positions().as_score()
+        ScoreBuilder::new(needle, haystack).calculate().with_positions().build()
     }
 }
 
@@ -204,7 +204,7 @@ impl<'a> ScoreBuilder<'a> {
     }
 
     #[inline]
-    fn as_score(self) -> Score {
+    fn build(self) -> Score {
         Score {
             value: self.score,
             positions: self.positions,
