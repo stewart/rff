@@ -30,7 +30,7 @@ impl Score {
     /// assert_eq!(score.value, std::f64::INFINITY);
     /// ```
     pub fn new(needle: &str, haystack: &str) -> Score {
-        Scorer::new(needle, haystack).calculate().as_score()
+        ScoreBuilder::new(needle, haystack).calculate().as_score()
     }
 
     /// Creates a new Score from the provided needle and haystack, calculating
@@ -45,7 +45,7 @@ impl Score {
     /// assert_eq!(score.positions, Some(vec![0, 1, 2]));
     /// ```
     pub fn with_positions(needle: &str, haystack: &str) -> Score {
-        Scorer::new(needle, haystack).calculate().with_positions().as_score()
+        ScoreBuilder::new(needle, haystack).calculate().with_positions().as_score()
     }
 }
 
@@ -63,7 +63,7 @@ impl PartialEq for Score {
     }
 }
 
-struct Scorer<'a> {
+struct ScoreBuilder<'a> {
     needle: &'a str,
     haystack: &'a str,
     len_n: usize,
@@ -74,13 +74,13 @@ struct Scorer<'a> {
     positions: Option<Vec<usize>>
 }
 
-impl<'a> Scorer<'a> {
+impl<'a> ScoreBuilder<'a> {
     #[inline]
-    fn new(needle: &'a str, haystack: &'a str) -> Scorer<'a> {
+    fn new(needle: &'a str, haystack: &'a str) -> ScoreBuilder<'a> {
         let len_n = needle.chars().count();
         let len_h = haystack.chars().count();
 
-        Scorer {
+        ScoreBuilder {
             needle: needle,
             haystack: haystack,
             len_n: len_n,
@@ -93,7 +93,7 @@ impl<'a> Scorer<'a> {
     }
 
     #[inline]
-    fn calculate(mut self) -> Scorer<'a> {
+    fn calculate(mut self) -> ScoreBuilder<'a> {
         if self.len_n == 0 {
             self.score = SCORE_MIN;
             return self;
@@ -159,7 +159,7 @@ impl<'a> Scorer<'a> {
     }
 
     #[inline]
-    fn with_positions(mut self) -> Scorer<'a> {
+    fn with_positions(mut self) -> ScoreBuilder<'a> {
         if self.len_n == self.len_h {
             self.positions = Some((0..self.len_n).collect());
         }
