@@ -115,25 +115,21 @@ impl<'a> Interface<'a> {
     }
 
     fn filter_choices(&mut self) {
-        let mut matches = self.choices.
+        self.matches = self.choices.
             par_iter().
             filter_map(|choice| Choice::with_positions(&self.search, choice)).
             collect::<Vec<_>>();
 
-        matches.sort_by(|a, b| a.partial_cmp(b).unwrap().reverse());
-
-        self.matches = matches;
+        self.matches.sort_by(|a, b| a.partial_cmp(b).unwrap().reverse());
     }
 
     fn filter_existing(&mut self) {
-        let mut matches = self.matches.
+        self.matches = self.matches.
             par_iter().
             filter_map(|m| Choice::with_positions(&self.search, m.0)).
             collect::<Vec<_>>();
 
-        matches.sort_by(|a, b| a.partial_cmp(b).unwrap().reverse());
-
-        self.matches = matches;
+        self.matches.sort_by(|a, b| a.partial_cmp(b).unwrap().reverse());
     }
 
     fn prompt(&self) -> String {
