@@ -1,6 +1,6 @@
 [root]
 name = "rff"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "getopts 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.19 (registry+https://github.com/rust-lang/crates.io-index)",
