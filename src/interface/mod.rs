@@ -68,7 +68,7 @@ impl<'a> Interface<'a> {
         for event in self.terminal.events()? {
             if let Event::Key(key) = event? {
                 match key {
-                    Key::Ctrl('c') | Key::Ctrl('d') => {
+                    Key::Ctrl('c') | Key::Ctrl('d') | Key::Escape => {
                         self.reset()?;
                         return Err(Error::Exit);
                     }
