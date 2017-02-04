@@ -82,13 +82,9 @@ fn run() -> i32 {
         }
     } else {
         let choices = choices.iter().map(|x| &x[..]).collect::<Vec<&str>>();
+        let initial = matches.opt_str("q").unwrap_or_default();
 
-        let opts = interface::Options {
-            choices: choices,
-            initial: matches.opt_str("q").unwrap_or_default()
-        };
-
-        let mut interface = Interface::from_opts(opts);
+        let mut interface = Interface::new(choices, initial);
 
         match interface.run() {
             Ok(result) => println!("{}", result),
