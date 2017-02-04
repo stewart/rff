@@ -27,7 +27,7 @@ impl From<terminal::Error> for Error {
 }
 
 pub struct Interface<'a> {
-    choices: Vec<&'a str>,
+    choices: &'a Vec<String>,
     matches: Vec<Choice<'a>>,
     choices_width: usize,
     selected: usize,
@@ -38,7 +38,7 @@ pub struct Interface<'a> {
 
 impl<'a> Interface<'a> {
     /// Creates a new Interface from the provided options.
-    pub fn new(choices: Vec<&'a str>, initial: String) -> Interface<'a> {
+    pub fn new(choices: &'a Vec<String>, initial: String) -> Interface<'a> {
         let mut term = Terminal::from("/dev/tty").unwrap();
         term.set_raw_mode().unwrap();
 
