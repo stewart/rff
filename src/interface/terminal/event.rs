@@ -16,6 +16,7 @@ pub enum Event {
 pub enum Key {
     Escape,
     Backspace,
+    Tab,
 
     Left, Right, Up, Down,
 

@@ -35,6 +35,7 @@ impl<R: Read> Iterator for Events<R> {
             Ok(1) => {
                 match buf[0] {
                     b'\x1b' => Ok(Event::Key(Key::Escape)),
+                    b'\t' => Ok(Event::Key(Key::Tab)),
                     item => parse_event(item, &mut source.bytes())
                 }
             },
