@@ -22,13 +22,7 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
     let mut hchars = haystack.chars();
 
     needle.chars().all(|n| {
-        while let Some(h) = hchars.next() {
-            if eq(n, h) {
-                return true
-            }
-        }
-
-        false
+        hchars.any(|h| eq(n, h))
     })
 }
 
