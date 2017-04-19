@@ -28,7 +28,7 @@ This benchmark was run on Arch Linux:
     $ find ~/dev/linux -type f > files
 
     $ time fzy -e drivers --benchmark < files
-    fzy -e drivers --benchmark  1.52s user 0.01s system 202% cpu 0.755 total
+    fzy -e drivers --benchmark < files  1.97s user 0.04s system 344% cpu 0.583 total
 
     $ time rff -s drivers --benchmark < files
     rff -s drivers --benchmark < files  4.99s user 0.07s system 356% cpu 1.421 total
@@ -38,7 +38,7 @@ Interestingly, the macOS implementation of `tolower(3)` appears to be not nearly
     $ find ~/dev/linux -type f > files
 
     $ time fzy -e drivers --benchmark < files
-    fzy -e drivers --benchmark < files  18.42s user 0.06s system 356% cpu 5.192 total
+    fzy -e drivers --benchmark < files  17.92s user 0.07s system 364% cpu 4.932 total
 
     $ time rff -s drivers --benchmark < files
     rff -s drivers --benchmark < files  8.93s user 0.08s system 349% cpu 2.578 total
