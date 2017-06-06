@@ -9,7 +9,7 @@ use std::env;
 use std::io::{self, BufRead, Write, BufWriter};
 use std::process;
 use rayon::prelude::*;
-use getopts::{Options, Fail};
+use getopts::Options;
 use rff::Choice;
 use interface::{Interface, Error};
 
@@ -19,19 +19,24 @@ fn main() {
 }
 
 fn run() -> i32 {
-    let args = env::args().skip(1).collect::<Vec<String>>();
-    let mut opts = Options::new();
+    let args: Vec<String> = env::args().skip(1).collect();
 
-    opts.optopt("s", "search", "Output sorted matches of QUERY", "QUERY");
-    opts.optopt("q", "query", "Use QUERY as the initial search string", "QUERY");
-    opts.optflag("", "benchmark", "Run search in benchmark mode");
-    opts.optflag("h", "help", "Display this help and exit");
-    opts.optflag("v", "version", "Display version information and exit");
+    let opts = {
+        let mut opts = Options::new();
 
-    let matches = match opts.parse(args).map_err(translate_parse_error) {
+        opts.optopt("s", "search", "Output sorted matches of QUERY", "QUERY");
+        opts.optopt("q", "query", "Use QUERY as the initial search string", "QUERY");
+        opts.optflag("", "benchmark", "Run search in benchmark mode");
+        opts.optflag("h", "help", "Display this help and exit");
+        opts.optflag("v", "version", "Display version information and exit");
+
+        opts
+    };
+
+    let matches = match opts.parse(args) {
         Ok(matches) => matches,
         Err(err) => {
-            println!("{}", err);
+            println!("{}", err.to_string());
             print_usage(opts);
             return 1;
         }
@@ -102,16 +107,6 @@ fn get_choices() -> Vec<String> {
     let stdin = io::stdin();
     let lines = stdin.lock().lines().map(Result::unwrap).collect();
     lines
-}
-
-fn translate_parse_error(err: Fail) -> String {
-    match err {
-        Fail::ArgumentMissing(opt) => format!("Argument missing: {}", opt),
-        Fail::UnrecognizedOption(opt) => format!("Invalid option: {}", opt),
-        Fail::OptionMissing(opt) => format!("Missing option: {}", opt),
-        Fail::OptionDuplicated(opt) => format!("Duplicated option: {}", opt),
-        Fail::UnexpectedArgument(opt) => format!("Unexpected argument: {}", opt)
-    }
 }
 
 fn print_usage(opts: Options) {
