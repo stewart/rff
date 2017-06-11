@@ -38,7 +38,6 @@ fn bonus_for_prev(ch: char) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use fuzzy::consts::*;
 
     #[test]
     fn test_compute_bonus() {
