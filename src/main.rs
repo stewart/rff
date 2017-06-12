@@ -4,20 +4,19 @@ extern crate libc;
 extern crate rff;
 
 mod interface;
-mod args;
+mod app;
 
-use std::env;
 use std::io::{self, BufRead, Write, BufWriter};
 use std::process;
 use rayon::prelude::*;
 use rff::Choice;
-use args::Action;
+use app::{App, Action};
 use interface::{Interface, Error};
 
 fn main() {
-    let opts: Vec<String> = env::args().skip(1).collect();
+    let app = App::new();
 
-    match args::parse(opts) {
+    match app.action {
         Action::Exit(code) => {
             process::exit(code)
         }
