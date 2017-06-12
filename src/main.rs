@@ -11,18 +11,18 @@ use std::io::{self, BufRead, Write, BufWriter};
 use std::process;
 use rayon::prelude::*;
 use rff::Choice;
-use args::Mode;
+use args::Action;
 use interface::{Interface, Error};
 
 fn main() {
     let opts: Vec<String> = env::args().skip(1).collect();
 
     match args::parse(opts) {
-        Mode::Exit(code) => {
+        Action::Exit(code) => {
             process::exit(code)
         }
 
-        Mode::Interactive(initial) => {
+        Action::InteractiveMode(initial) => {
             let choices = get_choices();
             let mut interface = Interface::new(&choices, initial);
 
@@ -36,7 +36,7 @@ fn main() {
             }
         }
 
-        Mode::Search(search) => {
+        Action::Search(search) => {
             let choices = get_choices();
 
             let mut choices = choices.
@@ -54,7 +54,7 @@ fn main() {
             }
         }
 
-        Mode::Benchmark(search) => {
+        Action::Benchmark(search) => {
             let choices = get_choices();
 
             for _ in 0..100 {
