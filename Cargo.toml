@@ -4,9 +4,9 @@ version = "0.2.0"
 authors = ["Andrew Stewart <andrew@stwrt.ca>"]
 
 [dependencies]
-getopts = "0.2.4"
-rayon = "0.7.0"
-libc = "0.2.18"
+getopts = "0.2.14"
+rayon = "0.8.1"
+libc = "0.2.21"
 
 [[bin]]
 name = "rff"
