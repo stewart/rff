@@ -1,3 +1,6 @@
+extern crate rff;
+
 fn main() {
-    println!("Hello, world!");
+    let lines = rff::stdin::slurp();
+    println!("Lines:\n{:?}", lines);
 }
