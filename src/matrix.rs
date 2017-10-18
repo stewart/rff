@@ -8,8 +8,8 @@ impl Matrix {
     /// Creates a new Matrix with the given width and height
     pub fn new(width: usize, height: usize) -> Matrix {
         Matrix {
-            contents: vec![0.0; width * height],
-            cols: width,
+            contents: (0..width * height).map(|_i| 0.0).collect(),
+            cols: width
         }
     }
 
