@@ -72,7 +72,9 @@ pub fn score(needle: &str, haystack: &str) -> f64 {
 
 pub fn compute_bonus(haystack: &str) -> Vec<f64> {
     let mut last_char = '/';
-    let len = haystack.chars().count();
+
+    let (_, len) = haystack.chars().size_hint();
+    let len = len.unwrap_or_else(|| haystack.chars().count());
 
     haystack.chars().fold(Vec::with_capacity(len), |mut vec, ch| {
         vec.push(bonus_for_char(last_char, ch));
