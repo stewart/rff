@@ -4,6 +4,7 @@ version = "0.2.0"
 authors = ["Andrew Stewart <andrew@stwrt.ca>"]
 
 [dependencies]
+clap = "2.26.2"
 
 [[bin]]
 name = "rff"
