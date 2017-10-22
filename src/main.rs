@@ -9,8 +9,13 @@ fn main() {
         let lines = stdin::slurp();
 
         let mut lines: Vec<_> = lines.iter()
-            .filter(|line| { matcher::matches(&search_term, line) })
-            .map(|line| { (line, scorer::score(&search_term, line)) })
+            .filter_map(|line| {
+                if matcher::matches(&search_term, line) {
+                    Some((line, scorer::score(&search_term, line)))
+                } else {
+                    None
+                }
+            })
             .collect();
 
         lines.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
