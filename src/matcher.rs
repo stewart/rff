@@ -22,7 +22,7 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
 
 /// Compares two characters case-insensitively
 #[inline(always)]
-fn eq(a: char, b: char) -> bool {
+pub fn eq(a: char, b: char) -> bool {
     match a {
         _ if a == b => true,
         _ if a.is_ascii() || b.is_ascii() => a.eq_ignore_ascii_case(&b),
