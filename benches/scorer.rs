@@ -4,7 +4,7 @@ extern crate test;
 
 use test::Bencher;
 
-use rff::scorer::score;
+use rff::scorer::{score, compute_bonus};
 
 #[bench]
 fn bench_score(b: &mut Bencher) {
@@ -36,5 +36,22 @@ fn bench_score_multiple(b: &mut Bencher) {
         score("amor", "Gemfile");
         score("amor", "node_modules/test/a/thing.js");
         score("amor", "vendor/bundle/ruby/gem.rb")
+    })
+}
+
+#[bench]
+fn bench_compute_bonus(b: &mut Bencher) {
+    b.iter(|| compute_bonus("app/models/this/is/a/strangely/nested/path.rb"))
+}
+
+#[bench]
+fn bench_compute_bonuses(b: &mut Bencher) {
+    b.iter(|| {
+        compute_bonus("app/models/order.rb");
+        compute_bonus("spec/models/order_spec.rb");
+        compute_bonus("other_garbage.rb");
+        compute_bonus("Gemfile");
+        compute_bonus("node_modules/test/a/thing.js");
+        compute_bonus("vendor/bundle/ruby/gem.rb")
     })
 }
