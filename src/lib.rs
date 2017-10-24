@@ -1,4 +1,5 @@
 mod consts;
+mod ansi;
 
 pub mod stdin;
 pub mod matcher;
