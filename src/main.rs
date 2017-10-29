@@ -33,14 +33,14 @@ fn main() {
         for _ in 0..100 {
             lines
                 .iter()
-                .filter_map(|line| match_and_score(&query, line))
+                .filter_map(|line| match_and_score(query, line))
                 .collect::<Vec<_>>()
                 .sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
         }
     } else {
         let mut lines: Vec<_> = lines
             .iter()
-            .filter_map(|line| match_and_score(&query, line))
+            .filter_map(|line| match_and_score(query, line))
             .collect();
 
         lines.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
@@ -55,7 +55,7 @@ fn main() {
 }
 
 fn match_and_score<'a>(needle: &str, haystack: &'a str) -> Option<Match<'a>> {
-    if matcher::matches(&needle, haystack) {
+    if matcher::matches(needle, haystack) {
         Some((haystack, scorer::score(needle, haystack)))
     } else {
         None

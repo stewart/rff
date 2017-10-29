@@ -14,9 +14,9 @@ impl Matrix {
     }
 
     /// Returns a reference to the specified coordinates of the Matrix
-    pub fn get(&self, col: usize, row: usize) -> &f64 {
+    pub fn get(&self, col: usize, row: usize) -> f64 {
         debug_assert!(col * row < self.contents.len());
-        self.contents.get(row * self.cols + col).unwrap()
+        self.contents[row * self.cols + col]
     }
 
     /// Sets the coordinates of the Matrix to the specified value
@@ -33,15 +33,15 @@ mod tests {
     #[test]
     fn test_get() {
         let mat = Matrix::new(10, 5);
-        assert_eq!(mat.get(0, 0), &0.0);
-        assert_eq!(mat.get(9, 4), &0.0);
+        assert_eq!(mat.get(0, 0), 0.0);
+        assert_eq!(mat.get(9, 4), 0.0);
     }
 
     #[test]
     fn test_set() {
         let mut mat = Matrix::new(10, 5);
         mat.set(9, 4, 1.0);
-        assert_eq!(mat.get(0, 0), &0.0);
-        assert_eq!(mat.get(9, 4), &1.0);
+        assert_eq!(mat.get(0, 0), 0.0);
+        assert_eq!(mat.get(9, 4), 1.0);
     }
 }

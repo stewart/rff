@@ -67,7 +67,7 @@ pub fn score(needle: &str, haystack: &str) -> f64 {
         }
     }
 
-    *m.get(needle_length - 1, haystack_length - 1)
+    m.get(needle_length - 1, haystack_length - 1)
 }
 
 pub fn compute_bonus(haystack: &str) -> Vec<f64> {

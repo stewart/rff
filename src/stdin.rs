@@ -3,7 +3,7 @@ use std::io::{self, BufRead};
 /// A useful alias for the backing storage we parse STDIN into.
 pub type InputLines = Vec<String>;
 
-/// Pulls lines of input from STDIN into an InputLines.
+/// Pulls lines of input from STDIN into an `InputLines`.
 pub fn slurp() -> InputLines {
     let stdin = io::stdin();
     let stdin = stdin.lock();

@@ -13,5 +13,5 @@ fn bench_matrix_new(b: &mut Bencher) {
 
 #[bench]
 fn bench_matrix_new_large_haystack(b: &mut Bencher) {
-    b.iter(|| Matrix::new(10, 10240))
+    b.iter(|| Matrix::new(10, 10_240))
 }
