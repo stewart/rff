@@ -60,8 +60,7 @@ impl Terminal {
             let mut ios: termios = mem::zeroed();
 
             // get the existing termios
-            let result = tcgetattr(fd, &mut ios);
-            if result != 0 {
+            if tcgetattr(fd, &mut ios) != 0 {
                 return Err(Error::TcGetAttr);
             }
 
@@ -71,8 +70,7 @@ impl Terminal {
             cfmakeraw(&mut ios);
 
             // apply the raw mode termios
-            let result = tcsetattr(fd, TCSANOW, &ios);
-            if result != 0 {
+            if tcsetattr(fd, TCSANOW, &ios) != 0 {
                 return Err(Error::TcSetAttr);
             }
         }
@@ -86,8 +84,7 @@ impl Terminal {
 
             // disable raw mode, by setting the original termios
             unsafe {
-                let result = tcsetattr(fd, TCSANOW, &opts);
-                if result != 0 {
+                if tcsetattr(fd, TCSANOW, &opts) != 0 {
                     return Err(Error::TcSetAttr);
                 }
             }
