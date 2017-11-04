@@ -4,17 +4,12 @@ use std::mem;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write, Read};
 use std::os::unix::io::AsRawFd;
-use libc::{TCSANOW, TIOCGWINSZ, termios, winsize, c_int, c_ulong};
+use libc::{TCSANOW, TIOCGWINSZ, winsize};
+use libc::{termios, tcgetattr, tcsetattr};
+use libc::{ioctl, cfmakeraw};
 
 pub use self::input::*;
 pub use self::event::*;
-
-extern {
-    fn tcgetattr(filedes: c_int, termptr: *mut termios) -> c_int;
-    fn tcsetattr(filedes: c_int, opt: c_int, termptr: *const termios) -> c_int;
-    fn cfmakeraw(termptr: *mut termios);
-    fn ioctl(fd: c_int, request: c_ulong, ...) -> c_int;
-}
 
 #[derive(Debug)]
 pub enum Error {
