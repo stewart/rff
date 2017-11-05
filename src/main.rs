@@ -2,10 +2,8 @@ extern crate rff;
 extern crate clap;
 
 use std::io::{self, Write, BufWriter};
-use rff::{stdin, matcher, scorer};
+use rff::{stdin, match_and_score};
 use clap::{App, Arg};
-
-type Match<'a> = (&'a str, f64);
 
 fn main() {
     let matches = App::new("rff").
@@ -32,14 +30,6 @@ fn main() {
         benchmark(query, lines);
     } else {
         search(query, lines);
-    }
-}
-
-fn match_and_score<'a>(needle: &str, haystack: &'a str) -> Option<Match<'a>> {
-    if matcher::matches(needle, haystack) {
-        Some((haystack, scorer::score(needle, haystack)))
-    } else {
-        None
     }
 }
 
