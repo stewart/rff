@@ -3,6 +3,7 @@ extern crate clap;
 
 use std::io::{self, Write, BufWriter};
 use rff::{stdin, match_and_score};
+use rff::interface::Interface;
 use clap::{App, Arg};
 
 fn main() {
@@ -12,9 +13,9 @@ fn main() {
         about("A fuzzy finder.").
         arg(
             Arg::with_name("QUERY").
-                help("Term to search for").
-                required(true).
-                index(1)
+                short("s").
+                long("search").
+                help("Term to search for")
         ).
         arg(
             Arg::with_name("benchmark").
@@ -23,13 +24,18 @@ fn main() {
         ).
         get_matches();
 
-    let query = matches.value_of("QUERY").unwrap();
     let lines = stdin::slurp();
 
-    if matches.is_present("benchmark") {
-        benchmark(query, lines);
+    if matches.is_present("QUERY") {
+        let query = matches.value_of("QUERY").unwrap();
+
+        if matches.is_present("benchmark") {
+            benchmark(query, lines);
+        } else {
+            search(query, lines);
+        }
     } else {
-        search(query, lines);
+        Interface::new(lines).run();
     }
 }
 
