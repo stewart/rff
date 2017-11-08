@@ -27,6 +27,64 @@ pub fn score(needle: &str, haystack: &str) -> f64 {
         return SCORE_MIN;
     }
 
+    let (d, m) = calculate_score(needle, needle_length, haystack, haystack_length);
+
+    m.get(needle_length - 1, haystack_length - 1)
+}
+
+pub fn score_with_positions(needle: &str, haystack: &str) -> (f64, Vec<usize>) {
+    let needle_length = needle.chars().count();
+
+    // empty needle
+    if needle_length == 0 {
+        return (SCORE_MIN, vec![]);
+    }
+
+    let haystack_length = haystack.chars().count();
+
+    // perfect match
+    if needle_length == haystack_length {
+        return (SCORE_MAX, (0..needle_length).collect());
+    }
+
+    // unreasonably large haystack
+    if haystack_length > 1024 {
+        return (SCORE_MIN, vec![]);
+    }
+
+    let (d, m) = calculate_score(needle, needle_length, haystack, haystack_length);
+    let mut positions = vec![0 as usize; needle_length];
+
+    {
+        let mut match_required = false;
+        let mut j = haystack_length - 1;
+
+        for i in (0..needle_length).rev() {
+            while j > (0 as usize) {
+                let last = if i > 0 && j > 0 { d.get(i - 1, j - 1) } else { 0.0 };
+
+                let d = d.get(i, j);
+                let m = m.get(i, j);
+
+                if d != SCORE_MIN && (match_required || d == m) {
+                    if i > 0 && j > 0 && m == last + SCORE_MATCH_CONSECUTIVE {
+                        match_required = true;
+                    }
+
+                    positions[i] = j;
+
+                    break;
+                }
+
+                j -= 1
+            }
+        }
+    }
+
+    (m.get(needle_length - 1, haystack_length - 1), positions)
+}
+
+fn calculate_score(needle: &str, needle_length: usize, haystack: &str, haystack_length: usize) -> (Matrix, Matrix) {
     let bonus = compute_bonus(haystack);
 
     let mut m = Matrix::new(needle_length, haystack_length);
@@ -67,7 +125,7 @@ pub fn score(needle: &str, haystack: &str) -> f64 {
         }
     }
 
-    m.get(needle_length - 1, haystack_length - 1)
+    (d, m)
 }
 
 pub fn compute_bonus(haystack: &str) -> Vec<f64> {
@@ -184,5 +242,22 @@ mod tests {
         assert_eq!(bonus_for_char('.', '0'), SCORE_MATCH_DOT);
 
         assert_eq!(bonus_for_char('a', 'A'), SCORE_MATCH_CAPITAL);
+    }
+
+    #[test]
+    fn positions() {
+        macro_rules! test_positions {
+            ($needle:expr, $haystack:expr, $result:expr) => {
+                let (_, positions) = score_with_positions($needle, $haystack);
+                assert_eq!(positions, $result);
+            }
+        }
+
+        test_positions!("amo", "app/models/foo", vec![0, 4, 5]);
+        test_positions!("amor", "app/models/order", vec![0, 4, 11, 12]);
+        test_positions!("as", "tags", vec![1, 3]);
+        test_positions!("abc", "a/a/b/c/c", vec![2, 4, 6]);
+        test_positions!("foo", "foo", vec![0, 1, 2]);
+        test_positions!("drivers", "/path/to/drivers/file.txt", vec![9, 10, 11, 12, 13, 14, 15]);
     }
 }

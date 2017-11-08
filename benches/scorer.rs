@@ -4,7 +4,7 @@ extern crate test;
 
 use test::Bencher;
 
-use rff::scorer::{score, compute_bonus};
+use rff::scorer::{score, score_with_positions, compute_bonus};
 
 #[bench]
 fn bench_score(b: &mut Bencher) {
@@ -36,6 +36,23 @@ fn bench_score_multiple(b: &mut Bencher) {
         score("amor", "Gemfile");
         score("amor", "node_modules/test/a/thing.js");
         score("amor", "vendor/bundle/ruby/gem.rb")
+    })
+}
+
+#[bench]
+fn bench_score_with_positions(b: &mut Bencher) {
+    b.iter(|| score_with_positions("amor", "app/models/order.rb"))
+}
+
+#[bench]
+fn bench_score_multiple_with_positions(b: &mut Bencher) {
+    b.iter(|| {
+        score_with_positions("amor", "app/models/order.rb");
+        score_with_positions("amor", "spec/models/order_spec.rb");
+        score_with_positions("amor", "other_garbage.rb");
+        score_with_positions("amor", "Gemfile");
+        score_with_positions("amor", "node_modules/test/a/thing.js");
+        score_with_positions("amor", "vendor/bundle/ruby/gem.rb")
     })
 }
 
