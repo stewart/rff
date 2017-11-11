@@ -17,9 +17,10 @@ fn run() -> i32 {
         author("Andrew S. <andrew@stwrt.ca>").
         about("A fuzzy finder.").
         arg(
-            Arg::with_name("QUERY").
+            Arg::with_name("query").
                 short("s").
                 long("search").
+                value_name("QUERY").
                 help("Term to search for")
         ).
         arg(
@@ -29,18 +30,24 @@ fn run() -> i32 {
         ).
         get_matches();
 
-    let lines = stdin::slurp();
+    let has_query = matches.is_present("query");
+    let has_benchmark = matches.is_present("benchmark");
 
-    if matches.is_present("QUERY") {
-        let query = matches.value_of("QUERY").unwrap();
+    if has_benchmark && !has_query {
+        println!("Must specifiy -s/--search with --benchmark");
+        return 1
+    }
 
-        if matches.is_present("benchmark") {
-            benchmark(query, lines);
+    if has_query {
+        let query = matches.value_of("query").unwrap();
+
+        if has_benchmark {
+            benchmark(query, stdin::slurp());
         } else {
-            search(query, lines);
+            search(query, stdin::slurp());
         }
     } else {
-        Interface::new(lines).run();
+        Interface::new(stdin::slurp()).run();
     }
 
     return 0
