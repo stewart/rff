@@ -42,18 +42,20 @@ fn run() -> i32 {
         let query = matches.value_of("query").unwrap();
 
         if has_benchmark {
-            benchmark(query, stdin::slurp());
+            benchmark(query);
         } else {
-            search(query, stdin::slurp());
+            search(query);
         }
     } else {
-        Interface::new(stdin::slurp()).run();
+        interactive();
     }
 
     return 0
 }
 
-fn benchmark(needle: &str, lines: Vec<String>) {
+fn benchmark(needle: &str) {
+    let lines = stdin::slurp();
+
     // in benchmark mode, we run the match/score/sort loop 100 times
     for _ in 0..100 {
         lines
@@ -64,7 +66,8 @@ fn benchmark(needle: &str, lines: Vec<String>) {
     }
 }
 
-fn search(needle: &str, lines: Vec<String>) {
+fn search(needle: &str) {
+    let lines = stdin::slurp();
     let mut lines: Vec<_> = lines
         .iter()
         .filter_map(|line| match_and_score(needle, line))
@@ -78,4 +81,8 @@ fn search(needle: &str, lines: Vec<String>) {
     for line in &lines {
         writeln!(stdout, "{}", line.0).unwrap();
     }
+}
+
+fn interactive() {
+    Interface::new(stdin::slurp()).run();
 }
