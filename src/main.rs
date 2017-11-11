@@ -7,6 +7,11 @@ use rff::interface::Interface;
 use clap::{App, Arg};
 
 fn main() {
+    let status_code = run();
+    std::process::exit(status_code);
+}
+
+fn run() -> i32 {
     let matches = App::new("rff").
         version(env!("CARGO_PKG_VERSION")).
         author("Andrew S. <andrew@stwrt.ca>").
@@ -37,6 +42,8 @@ fn main() {
     } else {
         Interface::new(lines).run();
     }
+
+    return 0
 }
 
 fn benchmark(needle: &str, lines: Vec<String>) {
