@@ -1,5 +1,6 @@
 use std::io::{self, Write, BufWriter};
 
+use super::{MatchWithPositions, match_and_score_with_positions};
 use terminal::{self, Terminal};
 
 #[derive(Debug)]
@@ -21,16 +22,18 @@ impl From<terminal::Error> for Error {
     }
 }
 
-pub struct Interface {
-    lines: Vec<String>,
+pub struct Interface<'a> {
+    lines: &'a [String],
+    matches: Vec<MatchWithPositions<'a>>,
     search: String,
     terminal: Terminal,
 }
 
-impl Interface {
-    pub fn new(lines: Vec<String>) -> Interface {
+impl<'a> Interface<'a> {
+    pub fn new(lines: &'a [String]) -> Interface<'a> {
         Interface {
             lines: lines,
+            matches: vec![],
             search: String::new(),
             terminal: Terminal::from("/dev/tty").unwrap(),
         }

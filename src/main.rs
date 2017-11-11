@@ -84,5 +84,6 @@ fn search(needle: &str) {
 }
 
 fn interactive() {
-    Interface::new(stdin::slurp()).run().unwrap();
+    let lines = stdin::slurp();
+    Interface::new(&lines).run().unwrap();
 }
