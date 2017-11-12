@@ -120,7 +120,7 @@ impl<'a> Interface<'a> {
             filter_map(|line| match_and_score_with_positions(search, line)).
             collect();
 
-        self.matches.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
+        self.matches.par_sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
     }
 
     // Matches and scores the existing `matches` by `search`, sorting the result
@@ -132,7 +132,7 @@ impl<'a> Interface<'a> {
             filter_map(|&(line, _, _)| match_and_score_with_positions(search, line)).
             collect();
 
-        self.matches.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
+        self.matches.par_sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
     }
 
     // Renders the current state of the Interface to it's `terminal`

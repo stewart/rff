@@ -64,7 +64,7 @@ fn benchmark(needle: &str) {
             .par_iter()
             .filter_map(|line| match_and_score(needle, line))
             .collect::<Vec<_>>()
-            .sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
+            .par_sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
     }
 }
 
@@ -75,7 +75,7 @@ fn search(needle: &str) {
         .filter_map(|line| match_and_score(needle, line))
         .collect();
 
-    lines.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
+    lines.par_sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
 
     let stdout = io::stdout();
     let mut stdout = BufWriter::new(stdout.lock());
