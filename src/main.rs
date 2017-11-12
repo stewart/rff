@@ -85,5 +85,9 @@ fn search(needle: &str) {
 
 fn interactive() {
     let lines = stdin::slurp();
-    Interface::new(&lines).run().unwrap();
+
+    match Interface::new(&lines).run() {
+        Ok(result) => println!("{}", result),
+        Err(error) => println!("{:?}", error),
+    }
 }
