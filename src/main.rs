@@ -92,7 +92,7 @@ fn interactive() -> i32 {
         Ok(result) => println!("{}", result),
         Err(Error::Exit) => { return 1 },
         Err(error) => {
-            println!("{:?}", error);
+            eprintln!("{:?}", error);
             return 1
         },
     }
