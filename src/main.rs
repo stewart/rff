@@ -90,6 +90,7 @@ fn interactive() {
 
     match Interface::new(&lines).run() {
         Ok(result) => println!("{}", result),
-        Err(error) => println!("{:?}", error),
+        Err(rff::interface::Error::Exit) => {},
+        Err(error) => { println!("{:?}", error); },
     }
 }
