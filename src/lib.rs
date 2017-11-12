@@ -1,4 +1,5 @@
 extern crate libc;
+extern crate rayon;
 
 mod consts;
 mod ansi;

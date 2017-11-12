@@ -4,6 +4,8 @@ use super::{MatchWithPositions, match_and_score_with_positions};
 use ansi::{clear, color, cursor, style};
 use terminal::{self, Terminal, Key, Event};
 
+use rayon::prelude::*;
+
 #[derive(Debug)]
 pub enum Error {
     Exit,
@@ -108,7 +110,7 @@ impl<'a> Interface<'a> {
         let ref search = self.search;
 
         self.matches = self.lines.
-            iter().
+            par_iter().
             filter_map(|line| match_and_score_with_positions(search, line)).
             collect();
 
@@ -119,7 +121,7 @@ impl<'a> Interface<'a> {
         let ref search = self.search;
 
         self.matches = self.matches.
-            iter().
+            par_iter().
             filter_map(|&(line, _, _)| match_and_score_with_positions(search, line)).
             collect();
 

@@ -1,10 +1,12 @@
 extern crate rff;
 extern crate clap;
+extern crate rayon;
 
 use std::io::{self, Write, BufWriter};
 use rff::{stdin, match_and_score};
 use rff::interface::Interface;
 use clap::{App, Arg};
+use rayon::prelude::*;
 
 fn main() {
     let status_code = run();
@@ -59,7 +61,7 @@ fn benchmark(needle: &str) {
     // in benchmark mode, we run the match/score/sort loop 100 times
     for _ in 0..100 {
         lines
-            .iter()
+            .par_iter()
             .filter_map(|line| match_and_score(needle, line))
             .collect::<Vec<_>>()
             .sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
@@ -69,7 +71,7 @@ fn benchmark(needle: &str) {
 fn search(needle: &str) {
     let lines = stdin::slurp();
     let mut lines: Vec<_> = lines
-        .iter()
+        .par_iter()
         .filter_map(|line| match_and_score(needle, line))
         .collect();
 
