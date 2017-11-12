@@ -197,8 +197,8 @@ impl<'a> Interface<'a> {
 
     fn result(&mut self) -> &str {
         self.matches.iter().
-            map(|choice| choice.0).
             nth(self.selected).
+            map(|choice| choice.0).
             unwrap_or(&self.search)
     }
 }
