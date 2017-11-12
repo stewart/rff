@@ -1,6 +1,6 @@
 [package]
 name = "rff"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Andrew Stewart <andrew@stwrt.ca>"]
 
 [dependencies]
