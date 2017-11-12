@@ -28,14 +28,18 @@ impl From<terminal::Error> for Error {
 pub struct Interface<'a> {
     lines: &'a [String],
     matches: Vec<MatchWithPositions<'a>>,
+
     search: String,
     selected: usize,
+
     choices_width: usize,
     width: usize,
+
     terminal: Terminal,
 }
 
 impl<'a> Interface<'a> {
+    // Creates a new Interface with the provided lines
     pub fn new(lines: &'a [String]) -> Interface<'a> {
         let mut terminal = Terminal::from("/dev/tty").unwrap();
         let choices_width = format!("{}", lines.len()).len();
@@ -53,6 +57,7 @@ impl<'a> Interface<'a> {
         }
     }
 
+    // Runs the Interface, returning either the final selection, or an error
     pub fn run(&mut self) -> Result<&str, Error> {
         self.filter_matches();
         self.render()?;
@@ -106,6 +111,7 @@ impl<'a> Interface<'a> {
         Ok(self.result())
     }
 
+    // Matches and scores `lines` by `search`, sorting the result
     fn filter_matches(&mut self) {
         let ref search = self.search;
 
@@ -117,6 +123,7 @@ impl<'a> Interface<'a> {
         self.matches.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
     }
 
+    // Matches and scores the existing `matches` by `search`, sorting the result
     fn filter_existing(&mut self) {
         let ref search = self.search;
 
@@ -128,6 +135,7 @@ impl<'a> Interface<'a> {
         self.matches.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
     }
 
+    // Renders the current state of the Interface to it's `terminal`
     fn render(&mut self) -> io::Result<()> {
         self.clamp_selected();
 
@@ -180,6 +188,7 @@ impl<'a> Interface<'a> {
         format!("{:width$} > {}", count, self.search, width = self.choices_width)
     }
 
+    // Clamps `selected`, such that it doesn't overflow the matches length
     fn clamp_selected(&mut self) {
         let mut max = self.matches.len();
         if max > 10 { max = 10; }
@@ -189,6 +198,7 @@ impl<'a> Interface<'a> {
         }
     }
 
+    // Resets the `terminal`
     fn reset(&mut self) -> Result<(), Error> {
         write!(self.terminal, "{}{}", cursor::Column(1), clear::Screen)?;
         self.terminal.reset()?;
