@@ -4,7 +4,7 @@ extern crate rayon;
 
 use std::io::{self, Write, BufWriter};
 use rff::{stdin, match_and_score};
-use rff::interface::Interface;
+use rff::interface::{Interface, Error};
 use clap::{App, Arg};
 use rayon::prelude::*;
 
@@ -48,11 +48,11 @@ fn run() -> i32 {
         } else {
             search(query);
         }
-    } else {
-        interactive();
-    }
 
-    return 0
+        return 0
+    } else {
+        return interactive();
+    }
 }
 
 fn benchmark(needle: &str) {
@@ -85,12 +85,17 @@ fn search(needle: &str) {
     }
 }
 
-fn interactive() {
+fn interactive() -> i32 {
     let lines = stdin::slurp();
 
     match Interface::new(&lines).run() {
         Ok(result) => println!("{}", result),
-        Err(rff::interface::Error::Exit) => {},
-        Err(error) => { println!("{:?}", error); },
+        Err(Error::Exit) => { return 1 },
+        Err(error) => {
+            println!("{:?}", error);
+            return 1
+        },
     }
+
+    return 0
 }
