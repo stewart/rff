@@ -27,7 +27,7 @@ pub fn score(needle: &str, haystack: &str) -> f64 {
         return SCORE_MIN;
     }
 
-    let (d, m) = calculate_score(needle, needle_length, haystack, haystack_length);
+    let (_, m) = calculate_score(needle, needle_length, haystack, haystack_length);
 
     m.get(needle_length - 1, haystack_length - 1)
 }

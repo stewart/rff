@@ -2,9 +2,9 @@ extern crate libc;
 extern crate rayon;
 
 mod consts;
-mod ansi;
 mod terminal;
 
+pub mod ansi;
 pub mod stdin;
 pub mod matcher;
 pub mod matrix;

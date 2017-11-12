@@ -20,7 +20,7 @@ impl<R: Read> Iterator for Events<R> {
     type Item = Result<Event>;
 
     fn next(&mut self) -> Option<Result<Event>> {
-        let mut source = &mut self.source;
+        let ref mut source = self.source;
 
         if let Some(c) = self.leftover {
             // we have a leftover byte, use it
