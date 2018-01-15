@@ -3,8 +3,9 @@
 // Licensed under the MIT license
 
 use std::io::{Result, Error, ErrorKind};
-use std::ascii::AsciiExt;
 use std::str;
+
+#[allow(unused_imports)] use std::ascii::AsciiExt;
 
 #[derive(Debug)]
 pub enum Event {

@@ -1,4 +1,4 @@
-use std::ascii::AsciiExt;
+#[allow(unused_imports)] use std::ascii::AsciiExt;
 
 /// Searches for needle's chars in the haystack
 ///
