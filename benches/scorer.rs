@@ -22,6 +22,12 @@ fn bench_score_matching(b: &mut Bencher) {
 }
 
 #[bench]
+fn bench_score_large_haystack(b: &mut Bencher) {
+    let large_string = "X".repeat(1024);
+    b.iter(|| score("amor", &large_string))
+}
+
+#[bench]
 fn bench_score_huge_haystack(b: &mut Bencher) {
     let huge_string = "X".repeat(1025);
     b.iter(|| score("amor", &huge_string))
