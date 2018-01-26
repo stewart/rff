@@ -1,8 +1,107 @@
+# Based on the "trust" template v0.1.2
+# https://github.com/japaric/trust/tree/v0.1.2
+
+dist: trusty
 language: rust
-rust:
-  - stable
-  - beta
-  - nightly
+services: docker
+sudo: required
+
+env:
+  global:
+    - CRATE_NAME=rff
+
 matrix:
-  allow_failures:
-    - rust: nightly
+  include:
+    # ARM
+    - env: TARGET=aarch64-unknown-linux-gnu
+    - env: TARGET=arm-unknown-linux-gnueabi
+    - env: TARGET=armv7-unknown-linux-gnueabihf
+
+    # 686
+    - env: TARGET=i686-unknown-linux-gnu
+    - env: TARGET=i686-unknown-linux-musl
+
+    # PowerPC
+    - env: TARGET=powerpc-unknown-linux-gnu
+    - env: TARGET=powerpc64-unknown-linux-gnu
+    - env: TARGET=powerpc64le-unknown-linux-gnu
+
+    # Good ol' x86_64
+    - env: TARGET=x86_64-unknown-linux-gnu
+    - env: TARGET=x86_64-unknown-linux-musl
+
+    # macOS
+    - env: TARGET=i686-apple-darwin
+      os: osx
+    - env: TARGET=x86_64-apple-darwin
+      os: osx
+
+    # Nightly
+    - os: linux
+      rust: nightly
+      env: TARGET=i686-unknown-linux-musl
+    - os: linux
+      rust: nightly
+      env: TARGET=x86_64-unknown-linux-musl
+    - os: linux
+      rust: nightly
+      env: TARGET=x86_64-unknown-linux-gnu
+    - os: osx
+      rust: nightly
+      env: TARGET=x86_64-apple-darwin
+
+    # Beta
+    - os: linux
+      rust: beta
+      env: TARGET=i686-unknown-linux-musl
+    - os: linux
+      rust: beta
+      env: TARGET=x86_64-unknown-linux-musl
+    - os: linux
+      rust: beta
+      env: TARGET=x86_64-unknown-linux-gnu
+    - os: osx
+      rust: beta
+      env: TARGET=x86_64-apple-darwin
+
+before_install:
+  - set -e
+  - rustup self update
+
+install:
+  - sh ci/install.sh
+  - source ~/.cargo/env || true
+
+script:
+  - bash ci/script.sh
+
+after_script: set +e
+
+before_deploy:
+  - sh ci/before_deploy.sh
+
+deploy:
+  api_key:
+    secure: "uGQ8uifYOSOZqJtV4ydQ9tH+NMVWnCzRvX2Ngicc6jl/QzpGQfLyeaZP2QWssBQXsGmw5iPusvEPOVKmnkGffxfltsGd1zPaDFA83FcPAfC5zBDC5fjaCI8oQL9UqGxI3SGXnFKIQAjMW7HRDfhl/9jlk3KnTKYHjHwExJCzA6WwmMtrELbDiavGcfMkGkC69Jz3SDCbh/yILp/vpu6HJ/ol+7EckQXS44DBPoGyNZ2nGcDn1dXw98rHXOO7Y/G3codKK7+IO+4QzF9cOFIDiDvzyJIqMwGZo4tnQGUQs5WepJK8fQQTuJ1MCcL3SD0d7d/KykOaZoopC8f3oW1KQ+lEqZP6cQxGXStCgrqRRllf7eHahN70TBIbcQSDTwj40TidRE8ozQPNZBbOZAywsOUmrGk1ss3N8CKjP+5UELb09EyvGrlJIolS1K47MTnP4v6fOqPgJyw7DYh7HdI6fN7e2kHN8pDfIB1jAFb5YVRVsS6hdApnIEX/naxp2WLpFWohw01tp7uOJWXmJbsHE1lydvqyUKiWmCO5pDLDWLrZ8Q0kQMaJsW+oF4XnNXgOrPBNPXc7UxHbHdF9NuSdp6EswS5VcbcXbAG3NbH2zR472L+0BV5f4kQ9W6k33I5hvHT2IPKDwtakVbrCcRpUc0naUnd+if9mc/7nJE2jMwE="
+  file_glob: true
+  file: $CRATE_NAME-$TRAVIS_TAG-$TARGET.*
+  on:
+    condition: $TRAVIS_RUST_VERSION = stable
+    tags: true
+  provider: releases
+  skip_cleanup: true
+
+cache: cargo
+before_cache:
+  # Travis can't cache files that are not readable by "others"
+  - chmod -R a+r $HOME/.cargo
+
+branches:
+  only:
+    # release tags
+    - /^v\d+\.\d+\.\d+.*$/
+    - master
+
+notifications:
+  email:
+    on_success: never
