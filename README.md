@@ -8,11 +8,11 @@
 
 If you have a Rust toolchain installed, you can also build `rff` from source via Cargo:
 
-    $ cargo install --git https://github.com/stewart/rff
+    $ cargo install rff
 
 Additionally, you can tell `rustc` to build for your specific CPU architecture, for a possible minor speedup:
 
-    $ RUSTFLAGS="-C target-cpu=native" cargo install --git https://github.com/stewart/rff
+    $ RUSTFLAGS="-C target-cpu=native" cargo install rff
 
 ### Usage
 
