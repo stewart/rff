@@ -2,6 +2,11 @@
 name = "rff"
 version = "0.3.0"
 authors = ["Andrew Stewart <andrew@stwrt.ca>"]
+homepage = "https://github.com/stewart/rff"
+description = "rff is a fast, simple fuzzy text selector for the terminal."
+license = "MIT"
+categories = ["command-line-utilities"]
+exclude = ["benches/*", "ci/*"]
 
 [dependencies]
 clap = "2.30.0"
