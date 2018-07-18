@@ -1,5 +1,7 @@
 extern crate clap;
 
+mod stdin;
+
 use std::process;
 use clap::App;
 
@@ -22,7 +24,10 @@ fn run() -> Result<()> {
         author("Andrew Stewart <andrew@stwrt.ca>").
         get_matches();
 
+    let choices = stdin::slurp();
+
     println!("args: {:?}", args);
+    println!("num of choices: {}", choices.len());
 
     Ok(())
 }
