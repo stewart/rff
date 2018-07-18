@@ -1,6 +1,7 @@
-use std::process;
+extern crate clap;
 
-pub const VERSION: &str = "1.0.0";
+use std::process;
+use clap::App;
 
 // A Result shorthand for the CLI integration
 type Result<T> = std::result::Result<T, &'static str>;
@@ -16,6 +17,12 @@ fn main() {
 }
 
 fn run() -> Result<()> {
-    println!("Hello, world!");
+    let args = App::new("rff").
+        version(env!("CARGO_PKG_VERSION")).
+        author("Andrew Stewart <andrew@stwrt.ca>").
+        get_matches();
+
+    println!("args: {:?}", args);
+
     Ok(())
 }

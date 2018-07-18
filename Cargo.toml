@@ -9,6 +9,7 @@ categories = ["command-line-utilities"]
 exclude = ["benches/*", "ci/*"]
 
 [dependencies]
+clap = "2.32.0"
 
 [[bin]]
 name = "rff"
