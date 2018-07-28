@@ -2,8 +2,8 @@ extern crate clap;
 
 mod stdin;
 
-use std::process;
 use clap::App;
+use std::process;
 
 // A Result shorthand for the CLI integration
 type Result<T> = std::result::Result<T, &'static str>;
@@ -19,10 +19,10 @@ fn main() {
 }
 
 fn run() -> Result<()> {
-    let args = App::new("rff").
-        version(env!("CARGO_PKG_VERSION")).
-        author("Andrew Stewart <andrew@stwrt.ca>").
-        get_matches();
+    let args = App::new("rff")
+        .version(env!("CARGO_PKG_VERSION"))
+        .author("Andrew Stewart <andrew@stwrt.ca>")
+        .get_matches();
 
     let choices = stdin::slurp();
 

@@ -20,13 +20,11 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
         match a {
             _ if a == b => true,
             _ if a.is_ascii() || b.is_ascii() => a.eq_ignore_ascii_case(&b),
-            _ => a.to_lowercase().eq(b.to_lowercase())
+            _ => a.to_lowercase().eq(b.to_lowercase()),
         }
     };
 
-    needle.chars().all(|n| {
-        hchars.any(|h| eq(n, h))
-    })
+    needle.chars().all(|n| hchars.any(|h| eq(n, h)))
 }
 
 #[cfg(test)]
