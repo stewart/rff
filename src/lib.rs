@@ -1,3 +1,5 @@
+#![deny(unused_must_use)]
+
 /// Returns true if `needle` fuzzily matches `haystack` - i.e., all the
 /// characters in `needle` are present in `haystack` in the same order.
 ///
