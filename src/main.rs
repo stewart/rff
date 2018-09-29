@@ -22,10 +22,13 @@ fn main() {
 
     let needle = args.value_of("NEEDLE").expect("Unable to get needle");
 
-    let query: Vec<String> = choices.
+    let results: Vec<(f64, String)> = choices.
         into_iter().
         filter(|haystack| matches(&needle, &haystack)).
+        map(|haystack| (score(&needle, &haystack), haystack)).
         collect();
 
-    print!("{}", query.join("\n"));
+    for (score, candidate) in results {
+        println!("{}: {}", score, candidate);
+    }
 }

@@ -1,5 +1,8 @@
 #![deny(unused_must_use)]
 
+const SCORE_MAX: f64 = std::f64::INFINITY;
+const SCORE_MIN: f64 = std::f64::NEG_INFINITY;
+
 /// Returns true if `needle` fuzzily matches `haystack` - i.e., all the
 /// characters in `needle` are present in `haystack` in the same order.
 ///
@@ -28,6 +31,22 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
     };
 
     needle.chars().all(|n| hchars.any(|h| eq(n, h)))
+}
+
+/// Scores the provided strings based on insert-only edit distance.
+/// This operates under the assumption that `needle` fuzzily matches `haystack`.
+pub fn score(needle: &str, haystack: &str) -> f64 {
+    // an empty needle doesn't match anything.
+    if needle.is_empty() {
+        return SCORE_MIN;
+    }
+
+    // if the needle and the haystack are identical, that's perfect.
+    if needle == haystack {
+        return SCORE_MAX;
+    }
+
+    0.0
 }
 
 #[cfg(test)]
@@ -60,5 +79,14 @@ mod test {
         assert!(matches("café", "CAFÉ"));
         assert!(matches("weiß", "WEIẞ"));
         assert!(matches("хди́ь", "ХОДИ́ТЬ"));
+    }
+
+    #[test]
+    fn test_score_basic() {
+        assert!(SCORE_MAX > SCORE_MIN);
+
+        assert_eq!(score("abc", "abc"), SCORE_MAX);
+        assert_eq!(score("", "abc"), SCORE_MIN);
+        assert_eq!(score("abc", "def"), 0.0);
     }
 }
