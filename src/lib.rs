@@ -1,5 +1,7 @@
 #![deny(unused_must_use)]
 
+mod bonus;
+
 const SCORE_MAX: f64 = std::f64::INFINITY;
 const SCORE_MIN: f64 = std::f64::NEG_INFINITY;
 
@@ -45,6 +47,8 @@ pub fn score(needle: &str, haystack: &str) -> f64 {
     if needle == haystack {
         return SCORE_MAX;
     }
+
+    let bonus = bonus::compute(haystack);
 
     0.0
 }
