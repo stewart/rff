@@ -15,7 +15,7 @@ clap = "2.32.0"
 criterion = "0.2"
 
 [[bench]]
-name = "matches"
+name = "rff"
 harness = false
 
 [[bin]]

@@ -2,10 +2,11 @@
 extern crate criterion;
 extern crate rff;
 
-use criterion::*;
-use rff::matches;
+use criterion::Criterion;
 
 fn bench_matches(c: &mut Criterion) {
+    use rff::matches;
+
     c.bench_function("matches-baseline", |b| {
         b.iter(|| matches("amo", "app/models/order.rb"))
     });
