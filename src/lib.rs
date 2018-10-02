@@ -5,8 +5,7 @@ pub mod bonus;
 const SCORE_MAX: f64 = std::f64::INFINITY;
 const SCORE_MIN: f64 = std::f64::NEG_INFINITY;
 
-/// Returns true if `needle` fuzzily matches `haystack` - i.e., all the
-/// characters in `needle` are present in `haystack` in the same order.
+/// Checks if `needle` fuzzily matches `haystack`.
 ///
 /// # Examples
 ///
@@ -35,8 +34,10 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
     needle.chars().all(|n| hchars.any(|h| eq(n, h)))
 }
 
-/// Scores the provided strings based on insert-only edit distance.
-/// This operates under the assumption that `needle` fuzzily matches `haystack`.
+/// Scores the provided `needle` against `haystack` using an insert-only edit distance algorithm.
+///
+/// This function operates under the assumption that `needle` is known to fuzzily match `haystack`.
+/// If this is not the case, unexpected return values may result.
 pub fn score(needle: &str, haystack: &str) -> f64 {
     // an empty needle doesn't match anything.
     if needle.is_empty() {
