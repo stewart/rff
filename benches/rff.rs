@@ -60,7 +60,8 @@ fn bench_bonus(c: &mut Criterion) {
     });
 
     c.bench_function("bonus-linux-worst-case", |b| {
-        let haystack = "arch/cris/include/arch-v32/mach-a3/mach/hwregs/iop/asm/iop_sap_out_defs_asm.h";
+        let haystack =
+            "arch/cris/include/arch-v32/mach-a3/mach/hwregs/iop/asm/iop_sap_out_defs_asm.h";
         b.iter(|| bonus::compute(haystack));
     });
 

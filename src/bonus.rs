@@ -36,10 +36,7 @@ mod test {
 
     #[test]
     fn test_compute() {
-        assert_eq!(
-            compute("abcd"),
-            vec![SCORE_MATCH_SLASH, 0.0, 0.0, 0.0]
-        );
+        assert_eq!(compute("abcd"), vec![SCORE_MATCH_SLASH, 0.0, 0.0, 0.0]);
 
         assert_eq!(
             compute("ab-c_d eF"),

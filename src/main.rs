@@ -17,8 +17,7 @@ fn main() {
                 .help("Term to search for")
                 .required(true)
                 .index(1),
-        )
-        .get_matches();
+        ).get_matches();
 
     let choices = stdin::slurp();
 
