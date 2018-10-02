@@ -6,7 +6,7 @@ const SCORE_MATCH_DOT: f64 = 0.6;
 /// Calculates per-character score bonuses for the provided `haystack`.
 pub fn compute(haystack: &str) -> Vec<f64> {
     let mut prev = '/';
-    let mut bonus = vec![];
+    let mut bonus = Vec::with_capacity(haystack.len());
 
     for current in haystack.chars() {
         bonus.push(for_char(prev, current));
