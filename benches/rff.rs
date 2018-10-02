@@ -46,5 +46,29 @@ fn bench_matches(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_matches);
+fn bench_bonus(c: &mut Criterion) {
+    use rff::bonus;
+
+    c.bench_function("bonus-baseline", |b| {
+        let haystack = "app/models/order.rb";
+        b.iter(|| bonus::compute(haystack));
+    });
+
+    c.bench_function("bonus-react", |b| {
+        let haystack = "app/webpack/components/utility/MediaQuery.tsx";
+        b.iter(|| bonus::compute(haystack));
+    });
+
+    c.bench_function("bonus-linux-worst-case", |b| {
+        let haystack = "arch/cris/include/arch-v32/mach-a3/mach/hwregs/iop/asm/iop_sap_out_defs_asm.h";
+        b.iter(|| bonus::compute(haystack));
+    });
+
+    c.bench_function("bonus-node_modules-worst-case", |b| {
+        let haystack = "node_modules/stylelint-scss/node_modules/stylelint/lib/rules/declaration-block-no-redundant-longhand-properties/index.js";
+        b.iter(|| bonus::compute(haystack));
+    });
+}
+
+criterion_group!(benches, bench_matches, bench_bonus);
 criterion_main!(benches);

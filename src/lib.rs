@@ -1,6 +1,6 @@
 #![deny(unused_must_use)]
 
-mod bonus;
+pub mod bonus;
 
 const SCORE_MAX: f64 = std::f64::INFINITY;
 const SCORE_MIN: f64 = std::f64::NEG_INFINITY;
