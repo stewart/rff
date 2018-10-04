@@ -1,6 +1,9 @@
 #![deny(unused_must_use)]
 
 pub mod bonus;
+mod matrix;
+
+use matrix::Matrix;
 
 const SCORE_MAX: f64 = std::f64::INFINITY;
 const SCORE_MIN: f64 = std::f64::NEG_INFINITY;
@@ -50,6 +53,13 @@ pub fn score(needle: &str, haystack: &str) -> f64 {
     }
 
     let bonus = bonus::compute(haystack);
+
+    let mut d = Matrix::new(
+        needle.chars().count(),
+        haystack.chars().count(),
+    );
+
+    let mut m = d.clone();
 
     0.0
 }
