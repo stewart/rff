@@ -24,16 +24,6 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
 
     let mut hchars = haystack.chars();
 
-    // compares two characters case-insensitively
-    // prefers direct and ascii-only comparison when possible for performance
-    let eq = |a: char, b: char| -> bool {
-        match a {
-            _ if a == b => true,
-            _ if a.is_ascii() || b.is_ascii() => a.eq_ignore_ascii_case(&b),
-            _ => a.to_lowercase().eq(b.to_lowercase()),
-        }
-    };
-
     needle.chars().all(|n| hchars.any(|h| eq(n, h)))
 }
 
@@ -62,6 +52,17 @@ pub fn score(needle: &str, haystack: &str) -> f64 {
     let mut m = d.clone();
 
     0.0
+}
+
+/// Compares two characters case-insensitively.
+///
+/// Prefers direct and ascii-only comparison when possible for performance.
+fn eq(a: char, b: char) -> bool {
+    match a {
+        _ if a == b => true,
+        _ if a.is_ascii() || b.is_ascii() => a.eq_ignore_ascii_case(&b),
+        _ => a.to_lowercase().eq(b.to_lowercase()),
+    }
 }
 
 #[cfg(test)]
