@@ -6,7 +6,6 @@ extern crate rff;
 use std::io::{self, BufRead, Result};
 
 use clap::{App, Arg};
-use rff::*;
 
 fn main() {
     let args = App::new("rff")
@@ -25,8 +24,8 @@ fn main() {
 
     let results: Vec<(f64, String)> = choices
         .into_iter()
-        .filter(|haystack| matches(&needle, &haystack))
-        .map(|haystack| (score(&needle, &haystack), haystack))
+        .filter(|haystack| rff::matches(&needle, &haystack))
+        .map(|haystack| (rff::score(&needle, &haystack), haystack))
         .collect();
 
     for (score, candidate) in results {
