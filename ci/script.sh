@@ -3,6 +3,8 @@
 set -ex
 
 main() {
+    cargo fmt --all -- --check
+
     cross build --target $TARGET
     cross build --target $TARGET --release
 
