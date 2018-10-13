@@ -2,15 +2,16 @@
 // Termion (c) 2016 Ticki
 // Licensed under the MIT license
 
-use std::io::{Result, Error, ErrorKind};
+use std::io::{Error, ErrorKind, Result};
 use std::str;
 
-#[allow(unused_imports)] use std::ascii::AsciiExt;
+#[allow(unused_imports)]
+use std::ascii::AsciiExt;
 
 #[derive(Debug)]
 pub enum Event {
     Key(Key),
-    Unknown(Vec<u8>)
+    Unknown(Vec<u8>),
 }
 
 #[derive(Debug)]
@@ -19,13 +20,19 @@ pub enum Key {
     Backspace,
     Tab,
 
-    Left, Right, Up, Down,
+    Left,
+    Right,
+    Up,
+    Down,
 
-    Home, End,
+    Home,
+    End,
 
-    PageUp, PageDown,
+    PageUp,
+    PageDown,
 
-    Delete, Insert,
+    Delete,
+    Insert,
 
     Char(char),
     Alt(char),
@@ -33,12 +40,13 @@ pub enum Key {
 
     F(u8),
 
-    Null
+    Null,
 }
 
 /// Parse an Event from `item` and possibly subsequent bytes through `iter`.
 pub fn parse_event<I>(item: u8, iter: &mut I) -> Result<Event>
-    where I: Iterator<Item = Result<u8>>
+where
+    I: Iterator<Item = Result<u8>>,
 {
     let error = Error::new(ErrorKind::Other, "Could not parse an event");
     match item {
@@ -69,12 +77,10 @@ pub fn parse_event<I>(item: u8, iter: &mut I) -> Result<Event>
         c @ b'\x01'...b'\x1A' => Ok(Event::Key(Key::Ctrl((c as u8 - 0x1 + b'a') as char))),
         c @ b'\x1C'...b'\x1F' => Ok(Event::Key(Key::Ctrl((c as u8 - 0x1C + b'4') as char))),
         b'\0' => Ok(Event::Key(Key::Null)),
-        c => {
-            Ok({
-                let ch = try!(parse_utf8_char(c, iter));
-                Event::Key(Key::Char(ch))
-            })
-        }
+        c => Ok({
+            let ch = try!(parse_utf8_char(c, iter));
+            Event::Key(Key::Char(ch))
+        }),
     }
 }
 
@@ -82,7 +88,8 @@ pub fn parse_event<I>(item: u8, iter: &mut I) -> Result<Event>
 ///
 /// Returns None if an unrecognized sequence is found.
 fn parse_csi<I>(iter: &mut I) -> Option<Event>
-    where I: Iterator<Item = Result<u8>>
+where
+    I: Iterator<Item = Result<u8>>,
 {
     Some(match iter.next() {
         Some(Ok(b'D')) => Event::Key(Key::Left),
@@ -110,10 +117,7 @@ fn parse_csi<I>(iter: &mut I) -> Option<Event>
 
                     // This CSI sequence can be a list of semicolon-separated
                     // numbers.
-                    let nums: Vec<u8> = str_buf
-                        .split(';')
-                        .map(|n| n.parse().unwrap())
-                        .collect();
+                    let nums: Vec<u8> = str_buf.split(';').map(|n| n.parse().unwrap()).collect();
 
                     if nums.is_empty() {
                         return None;
@@ -143,12 +147,12 @@ fn parse_csi<I>(iter: &mut I) -> Option<Event>
         }
         _ => return None,
     })
-
 }
 
 /// Parse `c` as either a single byte ASCII char or a variable size UTF-8 char.
 fn parse_utf8_char<I>(c: u8, iter: &mut I) -> Result<char>
-    where I: Iterator<Item = Result<u8>>
+where
+    I: Iterator<Item = Result<u8>>,
 {
     let error = Err(Error::new(ErrorKind::Other, "Input character is not valid UTF-8"));
     if c.is_ascii() {

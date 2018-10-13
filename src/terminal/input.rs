@@ -4,14 +4,14 @@ use super::event::{self, Event, Key};
 
 pub struct Events<R> {
     source: R,
-    leftover: Option<u8>
+    leftover: Option<u8>,
 }
 
 impl<R: Read> Events<R> {
     pub fn new(source: R) -> Events<R> {
         Events {
             source: source,
-            leftover: None
+            leftover: None,
         }
     }
 }
@@ -32,20 +32,16 @@ impl<R: Read> Iterator for Events<R> {
 
         let result = match source.read(&mut buf) {
             Ok(0) => return None,
-            Ok(1) => {
-                match buf[0] {
-                    b'\x1b' => Ok(Event::Key(Key::Escape)),
-                    b'\t' => Ok(Event::Key(Key::Tab)),
-                    item => parse_event(item, &mut source.bytes())
-                }
+            Ok(1) => match buf[0] {
+                b'\x1b' => Ok(Event::Key(Key::Escape)),
+                b'\t' => Ok(Event::Key(Key::Tab)),
+                item => parse_event(item, &mut source.bytes()),
             },
             Ok(2) => {
                 let mut option_iter = &mut Some(buf[1]).into_iter();
 
                 let result = {
-                    let mut iter = option_iter.
-                        map(Ok).
-                        chain(source.bytes());
+                    let mut iter = option_iter.map(Ok).chain(source.bytes());
 
                     parse_event(buf[0], &mut iter)
                 };
@@ -53,9 +49,9 @@ impl<R: Read> Iterator for Events<R> {
                 // If the option_iter wasn't consumed, keep the byte for later.
                 self.leftover = option_iter.next();
                 result
-            },
+            }
             Ok(_) => unreachable!(),
-            Err(e) => Err(e)
+            Err(e) => Err(e),
         };
 
         Some(result)
@@ -63,7 +59,8 @@ impl<R: Read> Iterator for Events<R> {
 }
 
 fn parse_event<I>(item: u8, iter: &mut I) -> Result<Event>
-    where I: Iterator<Item = Result<u8>>
+where
+    I: Iterator<Item = Result<u8>>,
 {
     let mut buf = vec![item];
     let result = {

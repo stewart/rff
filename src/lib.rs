@@ -5,11 +5,11 @@ mod consts;
 mod terminal;
 
 pub mod ansi;
-pub mod stdin;
+pub mod interface;
 pub mod matcher;
 pub mod matrix;
 pub mod scorer;
-pub mod interface;
+pub mod stdin;
 
 pub type Match<'a> = (&'a str, f64);
 pub type MatchWithPositions<'a> = (&'a str, f64, Vec<usize>);
@@ -22,7 +22,10 @@ pub fn match_and_score<'a>(needle: &str, haystack: &'a str) -> Option<Match<'a>>
     }
 }
 
-pub fn match_and_score_with_positions<'a>(needle: &str, haystack: &'a str) -> Option<MatchWithPositions<'a>> {
+pub fn match_and_score_with_positions<'a>(
+    needle: &str,
+    haystack: &'a str,
+) -> Option<MatchWithPositions<'a>> {
     if matcher::matches(needle, haystack) {
         let (score, positions) = scorer::score_with_positions(needle, haystack);
         Some((haystack, score, positions))

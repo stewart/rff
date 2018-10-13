@@ -1,8 +1,8 @@
-use std::io::{self, Write, BufWriter};
+use std::io::{self, BufWriter, Write};
 
-use super::{MatchWithPositions, match_and_score_with_positions};
+use super::{match_and_score_with_positions, MatchWithPositions};
 use ansi::{clear, color, cursor, style};
-use terminal::{self, Terminal, Key, Event};
+use terminal::{self, Event, Key, Terminal};
 
 use rayon::prelude::*;
 
@@ -10,7 +10,7 @@ use rayon::prelude::*;
 pub enum Error {
     Exit,
     Write(io::Error),
-    Reset(terminal::Error)
+    Reset(terminal::Error),
 }
 
 impl From<io::Error> for Error {
@@ -72,23 +72,23 @@ impl<'a> Interface<'a> {
 
                     Key::Char('\n') => {
                         break;
-                    },
+                    }
 
                     Key::Ctrl('n') => {
                         self.selected += 1;
                         self.render()?;
-                    },
+                    }
 
                     Key::Ctrl('p') => {
                         self.selected = self.selected.saturating_sub(1);
                         self.render()?;
-                    },
+                    }
 
                     Key::Char(ch) => {
                         self.search.push(ch);
                         self.filter_existing();
                         self.render()?;
-                    },
+                    }
 
                     Key::Backspace | Key::Ctrl('h') => {
                         self.search.pop();
@@ -115,10 +115,11 @@ impl<'a> Interface<'a> {
     fn filter_matches(&mut self) {
         let ref search = self.search;
 
-        self.matches = self.lines.
-            par_iter().
-            filter_map(|line| match_and_score_with_positions(search, line)).
-            collect();
+        self.matches = self
+            .lines
+            .par_iter()
+            .filter_map(|line| match_and_score_with_positions(search, line))
+            .collect();
 
         self.matches.par_sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
     }
@@ -127,10 +128,11 @@ impl<'a> Interface<'a> {
     fn filter_existing(&mut self) {
         let ref search = self.search;
 
-        self.matches = self.matches.
-            par_iter().
-            filter_map(|&(line, _, _)| match_and_score_with_positions(search, line)).
-            collect();
+        self.matches = self
+            .matches
+            .par_iter()
+            .filter_map(|&(line, _, _)| match_and_score_with_positions(search, line))
+            .collect();
 
         self.matches.par_sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap().reverse());
     }
@@ -191,10 +193,16 @@ impl<'a> Interface<'a> {
     // Clamps `selected`, such that it doesn't overflow the matches length
     fn clamp_selected(&mut self) {
         let mut max = self.matches.len();
-        if max > 10 { max = 10; }
+        if max > 10 {
+            max = 10;
+        }
 
         if self.selected >= max {
-            self.selected = if max > 0 { max - 1 } else { 0 };
+            self.selected = if max > 0 {
+                max - 1
+            } else {
+                0
+            };
         }
     }
 
@@ -206,9 +214,6 @@ impl<'a> Interface<'a> {
     }
 
     fn result(&mut self) -> &str {
-        self.matches.iter().
-            nth(self.selected).
-            map(|choice| choice.0).
-            unwrap_or(&self.search)
+        self.matches.iter().nth(self.selected).map(|choice| choice.0).unwrap_or(&self.search)
     }
 }

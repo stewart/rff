@@ -61,7 +61,11 @@ pub fn score_with_positions(needle: &str, haystack: &str) -> (f64, Vec<usize>) {
 
         for i in (0..needle_length).rev() {
             while j > (0 as usize) {
-                let last = if i > 0 && j > 0 { d.get(i - 1, j - 1) } else { 0.0 };
+                let last = if i > 0 && j > 0 {
+                    d.get(i - 1, j - 1)
+                } else {
+                    0.0
+                };
 
                 let d = d.get(i, j);
                 let m = m.get(i, j);
@@ -84,7 +88,12 @@ pub fn score_with_positions(needle: &str, haystack: &str) -> (f64, Vec<usize>) {
     (m.get(needle_length - 1, haystack_length - 1), positions)
 }
 
-fn calculate_score(needle: &str, needle_length: usize, haystack: &str, haystack_length: usize) -> (Matrix, Matrix) {
+fn calculate_score(
+    needle: &str,
+    needle_length: usize,
+    haystack: &str,
+    haystack_length: usize,
+) -> (Matrix, Matrix) {
     let bonus = compute_bonus(haystack);
 
     let mut m = Matrix::new(needle_length, haystack_length);
@@ -92,7 +101,11 @@ fn calculate_score(needle: &str, needle_length: usize, haystack: &str, haystack_
 
     for (i, n) in needle.chars().enumerate() {
         let mut prev_score = SCORE_MIN;
-        let gap_score = if i == needle_length - 1 { SCORE_GAP_TRAILING } else { SCORE_GAP_INNER };
+        let gap_score = if i == needle_length - 1 {
+            SCORE_GAP_TRAILING
+        } else {
+            SCORE_GAP_INNER
+        };
 
         for (j, h) in haystack.chars().enumerate() {
             if eq(n, h) {
@@ -108,8 +121,8 @@ fn calculate_score(needle: &str, needle_length: usize, haystack: &str, haystack_
                         let d = d + SCORE_MATCH_CONSECUTIVE;
 
                         (m).max(d)
-                    },
-                    _ => SCORE_MIN
+                    }
+                    _ => SCORE_MIN,
                 };
 
                 prev_score = score.max(prev_score + gap_score);
@@ -143,14 +156,12 @@ pub fn compute_bonus(haystack: &str) -> Vec<f64> {
 
 fn bonus_for_char(prev: char, current: char) -> f64 {
     match current {
-        'a' ... 'z' | '0' ... '9' => bonus_for_prev(prev),
-        'A' ... 'Z' => {
-            match prev {
-                'a' ... 'z' => SCORE_MATCH_CAPITAL,
-                _ => bonus_for_prev(prev)
-            }
-        }
-        _ => 0.0
+        'a'...'z' | '0'...'9' => bonus_for_prev(prev),
+        'A'...'Z' => match prev {
+            'a'...'z' => SCORE_MATCH_CAPITAL,
+            _ => bonus_for_prev(prev),
+        },
+        _ => 0.0,
     }
 }
 
@@ -159,10 +170,9 @@ fn bonus_for_prev(ch: char) -> f64 {
         '/' => SCORE_MATCH_SLASH,
         '-' | '_' | ' ' => SCORE_MATCH_WORD,
         '.' => SCORE_MATCH_DOT,
-        _ => 0.0
+        _ => 0.0,
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -213,7 +223,10 @@ mod tests {
     #[test]
     fn test_compute_bonus() {
         assert_eq!(compute_bonus("a/b/c/d"), vec![0.9, 0.0, 0.9, 0.0, 0.9, 0.0, 0.9]);
-        assert_eq!(compute_bonus("aTestString"), vec![0.9, 0.7, 0.0, 0.0, 0.0, 0.7, 0.0, 0.0, 0.0, 0.0, 0.0]);
+        assert_eq!(
+            compute_bonus("aTestString"),
+            vec![0.9, 0.7, 0.0, 0.0, 0.0, 0.7, 0.0, 0.0, 0.0, 0.0, 0.0]
+        );
     }
 
     #[test]
@@ -250,7 +263,7 @@ mod tests {
             ($needle:expr, $haystack:expr, $result:expr) => {
                 let (_, positions) = score_with_positions($needle, $haystack);
                 assert_eq!(positions, $result);
-            }
+            };
         }
 
         test_positions!("amo", "app/models/foo", vec![0, 4, 5]);

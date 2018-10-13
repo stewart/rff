@@ -4,7 +4,7 @@ extern crate test;
 
 use test::Bencher;
 
-use rff::scorer::{score, score_with_positions, compute_bonus};
+use rff::scorer::{compute_bonus, score, score_with_positions};
 
 #[bench]
 fn bench_score(b: &mut Bencher) {

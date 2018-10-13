@@ -1,27 +1,27 @@
 mod event;
 mod input;
-use std::mem;
+use libc::{cfmakeraw, ioctl};
+use libc::{tcgetattr, tcsetattr, termios};
+use libc::{winsize, TCSANOW, TIOCGWINSZ};
 use std::fs::{File, OpenOptions};
-use std::io::{self, Write, Read};
+use std::io::{self, Read, Write};
+use std::mem;
 use std::os::unix::io::AsRawFd;
-use libc::{TCSANOW, TIOCGWINSZ, winsize};
-use libc::{termios, tcgetattr, tcsetattr};
-use libc::{ioctl, cfmakeraw};
 
-pub use self::input::*;
 pub use self::event::*;
+pub use self::input::*;
 
 #[derive(Debug)]
 pub enum Error {
     TcGetAttr,
-    TcSetAttr
+    TcSetAttr,
 }
 
 pub struct Terminal {
     file: File,
     prev_termios: Option<termios>,
     pub max_width: usize,
-    pub max_height: usize
+    pub max_height: usize,
 }
 
 impl Terminal {
@@ -34,7 +34,7 @@ impl Terminal {
             file: file,
             prev_termios: None,
             max_width: 80,
-            max_height: 25
+            max_height: 25,
         };
 
         unsafe {

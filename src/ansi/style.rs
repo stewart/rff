@@ -24,7 +24,7 @@ mod tests {
                 let expected = concat!("\x1b[", $value);
                 assert_eq!(result, expected);
             }
-        }
+        };
     }
 
     test_style!(reset, Reset, "m");

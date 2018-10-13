@@ -23,7 +23,7 @@ pub enum Colors {
     LightBlue,
     LightMagenta,
     LightCyan,
-    LightWhite
+    LightWhite,
 }
 
 impl Color for Colors {
@@ -97,7 +97,7 @@ mod tests {
                 assert_eq!(fg, concat!("\x1b[38;5;", $value, "m"));
                 assert_eq!(bg, concat!("\x1b[48;5;", $value, "m"));
             }
-        }
+        };
     }
 
     test_color!(black, Black, 0);

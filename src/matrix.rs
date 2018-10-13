@@ -1,7 +1,7 @@
 /// The Matrix type represents a 2-dimensional Matrix.
 pub struct Matrix {
     cols: usize,
-    contents: Vec<f64>
+    contents: Vec<f64>,
 }
 
 impl Matrix {
@@ -9,7 +9,7 @@ impl Matrix {
     pub fn new(width: usize, height: usize) -> Matrix {
         Matrix {
             contents: (0..width * height).map(|_i| 0.0).collect(),
-            cols: width
+            cols: width,
         }
     }
 

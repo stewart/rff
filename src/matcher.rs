@@ -1,4 +1,5 @@
-#[allow(unused_imports)] use std::ascii::AsciiExt;
+#[allow(unused_imports)]
+use std::ascii::AsciiExt;
 
 /// Searches for needle's chars in the haystack
 ///
@@ -15,9 +16,7 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
 
     let mut hchars = haystack.chars();
 
-    needle.chars().all(|n| {
-        hchars.any(|h| eq(n, h))
-    })
+    needle.chars().all(|n| hchars.any(|h| eq(n, h)))
 }
 
 /// Compares two characters case-insensitively
@@ -26,7 +25,7 @@ pub fn eq(a: char, b: char) -> bool {
     match a {
         _ if a == b => true,
         _ if a.is_ascii() || b.is_ascii() => a.eq_ignore_ascii_case(&b),
-        _ => a.to_lowercase().eq(b.to_lowercase())
+        _ => a.to_lowercase().eq(b.to_lowercase()),
     }
 }
 

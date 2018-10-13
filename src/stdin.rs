@@ -23,11 +23,7 @@ mod tests {
         let input = b"a\nb\nc";
         let slice = &input[..];
 
-        let expected = [
-            String::from("a"),
-            String::from("b"),
-            String::from("c")
-        ];
+        let expected = [String::from("a"), String::from("b"), String::from("c")];
 
         assert_eq!(read_lines(slice), expected);
     }
