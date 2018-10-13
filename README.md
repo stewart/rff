@@ -1,5 +1,9 @@
 # rff
 
+[![Build Status](https://travis-ci.org/stewart/rff.svg?branch=master)](https://travis-ci.org/stewart/rff)
+[![docs.rs](https://docs.rs/rff/badge.svg)](https://docs.rs/rff)
+![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)
+
 `rff` is a fast, simple fuzzy text selector for the terminal, with full UTF-8 support. It uses [**`fzy`'s advanced scoring algorithm**][fzy-algo].
 
 ### Installation
