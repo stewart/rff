@@ -5,8 +5,6 @@
 use std::io::{Result, Error, ErrorKind};
 use std::str;
 
-#[allow(unused_imports)] use std::ascii::AsciiExt;
-
 #[derive(Debug)]
 pub enum Event {
     Key(Key),
