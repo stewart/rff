@@ -29,7 +29,7 @@ pub fn score(needle: &str, haystack: &str) -> f64 {
 
     let (_, m) = calculate_score(needle, needle_length, haystack, haystack_length);
 
-    m.get(needle_length - 1, haystack_length - 1)
+    m[(needle_length - 1, haystack_length - 1)]
 }
 
 pub fn score_with_positions(needle: &str, haystack: &str) -> (f64, Vec<usize>) {
@@ -61,10 +61,10 @@ pub fn score_with_positions(needle: &str, haystack: &str) -> (f64, Vec<usize>) {
 
         for i in (0..needle_length).rev() {
             while j > (0 as usize) {
-                let last = if i > 0 && j > 0 { d.get(i - 1, j - 1) } else { 0.0 };
+                let last = if i > 0 && j > 0 { d[(i - 1, j - 1)] } else { 0.0 };
 
-                let d = d.get(i, j);
-                let m = m.get(i, j);
+                let d = d[(i, j)];
+                let m = m[(i, j)];
 
                 if d != SCORE_MIN && (match_required || d == m) {
                     if i > 0 && j > 0 && m == last + SCORE_MATCH_CONSECUTIVE {
@@ -81,7 +81,7 @@ pub fn score_with_positions(needle: &str, haystack: &str) -> (f64, Vec<usize>) {
         }
     }
 
-    (m.get(needle_length - 1, haystack_length - 1), positions)
+    (m[(needle_length - 1, haystack_length - 1)], positions)
 }
 
 fn calculate_score(needle: &str, needle_length: usize, haystack: &str, haystack_length: usize) -> (Matrix, Matrix) {
@@ -101,8 +101,8 @@ fn calculate_score(needle: &str, needle_length: usize, haystack: &str, haystack_
                 let score = match i {
                     0 => ((j as f64) * SCORE_GAP_LEADING) + bonus_score,
                     _ if j > 0 => {
-                        let m = m.get(i - 1, j - 1);
-                        let d = d.get(i - 1, j - 1);
+                        let m = m[(i - 1, j - 1)];
+                        let d = d[(i - 1, j - 1)];
 
                         let m = m + bonus_score;
                         let d = d + SCORE_MATCH_CONSECUTIVE;
@@ -114,13 +114,13 @@ fn calculate_score(needle: &str, needle_length: usize, haystack: &str, haystack_
 
                 prev_score = score.max(prev_score + gap_score);
 
-                d.set(i, j, score);
-                m.set(i, j, prev_score);
+                d[(i, j)] = score;
+                m[(i, j)] = prev_score;
             } else {
                 prev_score += gap_score;
 
-                d.set(i, j, SCORE_MIN);
-                m.set(i, j, prev_score);
+                d[(i, j)] = SCORE_MIN;
+                m[(i, j)] = prev_score;
             }
         }
     }

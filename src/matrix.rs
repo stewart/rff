@@ -1,47 +1,53 @@
-/// The Matrix type represents a 2-dimensional Matrix.
+use std::ops::{Index, IndexMut};
+
+/// A type shorthand for the lookup key we'll be using, a width/height tuple.
+type Idx = (usize, usize);
+
+/// A 2-dimensional matrix of f64 values.
+#[derive(Clone, Debug)]
 pub struct Matrix {
-    cols: usize,
-    contents: Vec<f64>
+    width: usize,
+    contents: Vec<f64>,
 }
 
 impl Matrix {
-    /// Creates a new Matrix with the given width and height
+    /// Creates a new Matrix with the provided width and height.
     pub fn new(width: usize, height: usize) -> Matrix {
         Matrix {
-            contents: (0..width * height).map(|_i| 0.0).collect(),
-            cols: width
+            width,
+            contents: vec![0.0; width * height],
         }
     }
+}
 
-    /// Returns a reference to the specified coordinates of the Matrix
-    pub fn get(&self, col: usize, row: usize) -> f64 {
-        debug_assert!(col * row < self.contents.len());
-        self.contents[row * self.cols + col]
+impl Index<Idx> for Matrix {
+    type Output = f64;
+
+    fn index(&self, (width, height): Idx) -> &Self::Output {
+        &self.contents[height * self.width + width]
     }
+}
 
-    /// Sets the coordinates of the Matrix to the specified value
-    pub fn set(&mut self, col: usize, row: usize, val: f64) {
-        debug_assert!(col * row < self.contents.len());
-        self.contents[row * self.cols + col] = val;
+impl IndexMut<Idx> for Matrix {
+    fn index_mut(&mut self, (width, height): Idx) -> &mut Self::Output {
+        &mut self.contents[height * self.width + width]
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod test {
     use super::*;
 
     #[test]
-    fn test_get() {
-        let mat = Matrix::new(10, 5);
-        assert_eq!(mat.get(0, 0), 0.0);
-        assert_eq!(mat.get(9, 4), 0.0);
-    }
+    fn test_matrix() {
+        let mut matrix = Matrix::new(1024, 768);
 
-    #[test]
-    fn test_set() {
-        let mut mat = Matrix::new(10, 5);
-        mat.set(9, 4, 1.0);
-        assert_eq!(mat.get(0, 0), 0.0);
-        assert_eq!(mat.get(9, 4), 1.0);
+        // Index<Idx>
+        assert_eq!(matrix[(1023, 767)], 0.0);
+
+        // IndexMut<Idx>
+        matrix[(12, 24)] = 123.456;
+        assert_eq!(matrix[(12, 24)], 123.456);
+        assert_eq!(matrix[(24, 12)], 0.0);
     }
 }
