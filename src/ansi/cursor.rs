@@ -11,25 +11,25 @@ impl Display for GoTo {
     }
 }
 
-/// Move the cursor up N rows
+// Move the cursor up N rows
 generate_csi_struct!(Up, "A", u16);
 
-/// Move the cursor down N rows
+// Move the cursor down N rows
 generate_csi_struct!(Down, "B", u16);
 
-/// Move the cursor left N columns
+// Move the cursor left N columns
 generate_csi_struct!(Left, "D", u16);
 
-/// Move the cursor right N columns
+// Move the cursor right N columns
 generate_csi_struct!(Right, "C", u16);
 
-/// Move the cursor up N lines, and to the beginning of the line
+// Move the cursor up N lines, and to the beginning of the line
 generate_csi_struct!(UpLine, "F", u16);
 
-/// Move the cursor down N lines, and to the beginning of the line
+// Move the cursor down N lines, and to the beginning of the line
 generate_csi_struct!(DownLine, "E", u16);
 
-/// Set cursor column
+// Set cursor column
 #[derive(Copy, Clone)]
 pub struct Column(pub u16);
 
