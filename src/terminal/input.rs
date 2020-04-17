@@ -40,7 +40,7 @@ impl<R: Read> Iterator for Events<R> {
                 }
             },
             Ok(2) => {
-                let mut option_iter = &mut Some(buf[1]).into_iter();
+                let option_iter = &mut Some(buf[1]).into_iter();
 
                 let result = {
                     let mut iter = option_iter.
