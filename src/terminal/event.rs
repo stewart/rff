@@ -46,7 +46,7 @@ pub fn parse_event<I>(item: u8, iter: &mut I) -> Result<Event>
                 Some(Ok(b'O')) => {
                     match iter.next() {
                         // F1-F4
-                        Some(Ok(val @ b'P'...b'S')) => Event::Key(Key::F(1 + val - b'P')),
+                        Some(Ok(val @ b'P'..=b'S')) => Event::Key(Key::F(1 + val - b'P')),
                         _ => return Err(error),
                     }
                 }
@@ -64,8 +64,8 @@ pub fn parse_event<I>(item: u8, iter: &mut I) -> Result<Event>
         b'\n' | b'\r' => Ok(Event::Key(Key::Char('\n'))),
         b'\t' => Ok(Event::Key(Key::Char('\t'))),
         b'\x7F' => Ok(Event::Key(Key::Backspace)),
-        c @ b'\x01'...b'\x1A' => Ok(Event::Key(Key::Ctrl((c as u8 - 0x1 + b'a') as char))),
-        c @ b'\x1C'...b'\x1F' => Ok(Event::Key(Key::Ctrl((c as u8 - 0x1C + b'4') as char))),
+        c @ b'\x01'..=b'\x1A' => Ok(Event::Key(Key::Ctrl((c as u8 - 0x1 + b'a') as char))),
+        c @ b'\x1C'..=b'\x1F' => Ok(Event::Key(Key::Ctrl((c as u8 - 0x1C + b'4') as char))),
         b'\0' => Ok(Event::Key(Key::Null)),
         c => {
             Ok({
@@ -89,7 +89,7 @@ fn parse_csi<I>(iter: &mut I) -> Option<Event>
         Some(Ok(b'B')) => Event::Key(Key::Down),
         Some(Ok(b'H')) => Event::Key(Key::Home),
         Some(Ok(b'F')) => Event::Key(Key::End),
-        Some(Ok(c @ b'0'...b'9')) => {
+        Some(Ok(c @ b'0'..=b'9')) => {
             // Numbered escape code.
             let mut buf = Vec::new();
             buf.push(c);
@@ -130,9 +130,9 @@ fn parse_csi<I>(iter: &mut I) -> Option<Event>
                         4 | 8 => Event::Key(Key::End),
                         5 => Event::Key(Key::PageUp),
                         6 => Event::Key(Key::PageDown),
-                        v @ 11...15 => Event::Key(Key::F(v - 10)),
-                        v @ 17...21 => Event::Key(Key::F(v - 11)),
-                        v @ 23...24 => Event::Key(Key::F(v - 12)),
+                        v @ 11..=15 => Event::Key(Key::F(v - 10)),
+                        v @ 17..=21 => Event::Key(Key::F(v - 11)),
+                        v @ 23..=24 => Event::Key(Key::F(v - 12)),
                         _ => return None,
                     }
                 }

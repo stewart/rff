@@ -143,10 +143,10 @@ pub fn compute_bonus(haystack: &str) -> Vec<f64> {
 
 fn bonus_for_char(prev: char, current: char) -> f64 {
     match current {
-        'a' ... 'z' | '0' ... '9' => bonus_for_prev(prev),
-        'A' ... 'Z' => {
+        'a' ..= 'z' | '0' ..= '9' => bonus_for_prev(prev),
+        'A' ..= 'Z' => {
             match prev {
-                'a' ... 'z' => SCORE_MATCH_CAPITAL,
+                'a' ..= 'z' => SCORE_MATCH_CAPITAL,
                 _ => bonus_for_prev(prev)
             }
         }
