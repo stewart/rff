@@ -55,7 +55,7 @@ pub fn parse_event<I>(item: u8, iter: &mut I) -> Result<Event>
                     parse_csi(iter).ok_or(error)?
                 }
                 Some(Ok(c)) => {
-                    let ch = try!(parse_utf8_char(c, iter));
+                    let ch = parse_utf8_char(c, iter)?;
                     Event::Key(Key::Alt(ch))
                 }
                 Some(Err(_)) | None => return Err(error),
@@ -69,7 +69,7 @@ pub fn parse_event<I>(item: u8, iter: &mut I) -> Result<Event>
         b'\0' => Ok(Event::Key(Key::Null)),
         c => {
             Ok({
-                let ch = try!(parse_utf8_char(c, iter));
+                let ch = parse_utf8_char(c, iter)?;
                 Event::Key(Key::Char(ch))
             })
         }
