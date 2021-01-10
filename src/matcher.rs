@@ -7,9 +7,7 @@
 /// ```
 #[inline]
 pub fn matches(needle: &str, haystack: &str) -> bool {
-    if needle == "" || needle == haystack {
-        return true;
-    }
+    if needle == "" { return true; }
 
     let mut hchars = haystack.chars();
 
@@ -18,7 +16,7 @@ pub fn matches(needle: &str, haystack: &str) -> bool {
     })
 }
 
-/// Compares two characters case-insensitively
+/// Compare two `char` for case-insensitive equality.
 #[inline(always)]
 pub fn eq(a: char, b: char) -> bool {
     match a {
@@ -41,6 +39,7 @@ mod tests {
 
     #[test]
     fn test_matches() {
+        assert!(matches("", "a"));
         assert!(matches("a", "a"));
         assert!(matches("a", "abc"));
         assert!(matches("abc", "abc"));
