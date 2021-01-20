@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::io::{self, Write, BufWriter};
 
 use super::{MatchWithPositions, match_and_score_with_positions};
@@ -57,8 +58,9 @@ impl<'a> Interface<'a> {
         }
     }
 
-    // Runs the Interface, returning either the final selection, or an error
-    pub fn run(&mut self) -> Result<&str, Error> {
+    // Runs the Interface, returning either the final selection, the final
+    // search string if nothing matches, or an error
+    pub fn run(&mut self) -> Result<Cow<'a, str>, Error> {
         self.filter_matches();
         self.render()?;
 
@@ -108,7 +110,7 @@ impl<'a> Interface<'a> {
         }
 
         self.reset()?;
-        Ok(self.result())
+        Ok(self.take_result())
     }
 
     // Matches and scores `lines` by `search`, sorting the result
@@ -205,10 +207,13 @@ impl<'a> Interface<'a> {
         Ok(())
     }
 
-    fn result(&mut self) -> &str {
+    // Get a reference to the selected item, or take the search (and replace it with empty)
+    fn take_result(&mut self) -> Cow<'a, str> {
         self.matches.iter().
             nth(self.selected).
-            map(|choice| choice.0).
-            unwrap_or(&self.search)
+            map(|choice| Cow::Borrowed(choice.0)).
+            unwrap_or_else(||
+                Cow::Owned(std::mem::take(&mut self.search))
+            )
     }
 }
